@@ -240,17 +240,19 @@ public class Sim implements Comparable<Sim> {
     @Override
     public int compareTo(Sim o) {
         
-        return Double.compare(this.deathtime,o.deathtime);
+        return Double.compare(this.deathtime, o.deathtime);
     }
     
     /**
      * The method {@link #toString} defines the string implementation of a
      * {@link Sim}.
      * 
+     * @return String implementation of {@link Sim}
+     * @see java.lang.Object
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
+        
         return getIdentString(this) +
         " [" + birthtime + ".." + deathtime +
         ", mate " + getIdentString(mate) +
