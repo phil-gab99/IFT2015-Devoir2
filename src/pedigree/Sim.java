@@ -5,21 +5,21 @@ package pedigree;
  * their information.
  * 
  * @author Philippe Gabriel
- * @version 1.0 2021-mm-dd
+ * @version 1.0 2021-03-17
  */
  
 public class Sim implements Comparable<Sim> {
     
-    private static int NEXT_SIM_IDX = 0;
+    private static int NEXT_SIM_IDX = 0; // Index keeping track of totals sims
     
-    public static double MIN_MATING_AGE_F = 16.0;
-    public static double MIN_MATING_AGE_M = 16.0;
-    public static double MAX_MATING_AGE_F = 50.0; // Janet Jackson
-    public static double MAX_MATING_AGE_M = 73.0; // Charlie Chaplin
+    public static double MIN_MATING_AGE_F = 16.0; // Female minimum mating age
+    public static double MIN_MATING_AGE_M = 16.0; // Male minimum mating age
+    public static double MAX_MATING_AGE_F = 50.0; // Female maximum mating age
+    public static double MAX_MATING_AGE_M = 73.0; // Male maximum mating age
     
-    public enum Sex {F, M};
+    public enum Sex {F, M}; // Enum holding the two genders to consider
 
-    private final int sim_ident;
+    private final int sim_ident; // Current sim's identity defining their index
     
     private Sim mother; // Current Sim's mother
     private Sim father; // Current Sim's father
