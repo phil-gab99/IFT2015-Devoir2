@@ -4,22 +4,22 @@ package pedigree;
  * The class Sim defines a virtual individual along with methods to access
  * their information.
  * 
- * @author Philippe Gabriel
  * @version 1.0 2021-03-17
+ * @author Philippe Gabriel
  */
  
 public class Sim implements Comparable<Sim> {
     
-    private static int NEXT_SIM_IDX = 0; // Index keeping track of totals sims
+    private static int nextSimIdx = 0; // Index keeping track of totals sims
     
-    public static double MIN_MATING_AGE_F = 16.0; // Female minimum mating age
-    public static double MIN_MATING_AGE_M = 16.0; // Male minimum mating age
-    public static double MAX_MATING_AGE_F = 50.0; // Female maximum mating age
-    public static double MAX_MATING_AGE_M = 73.0; // Male maximum mating age
+    public static final double MIN_MATING_AGE_F = 16.0; // Female min mate age
+    public static final double MIN_MATING_AGE_M = 16.0; // Male min mate age
+    public static final double MAX_MATING_AGE_F = 50.0; // Female max mate age
+    public static final double MAX_MATING_AGE_M = 73.0; // Male max mate age
     
     public enum Sex {F, M}; // Enum holding the two genders to consider
 
-    private final int sim_ident; // Current sim's identity defining their index
+    private final int SIM_IDENT; // Current sim's identity stemming from index
     
     private Sim mother; // Current Sim's mother
     private Sim father; // Current Sim's father
@@ -49,7 +49,7 @@ public class Sim implements Comparable<Sim> {
         
         this.sex = sex;
         
-        this.sim_ident = NEXT_SIM_IDX++;
+        this.SIM_IDENT = nextSimIdx++;
     }
     
     /**
@@ -72,7 +72,7 @@ public class Sim implements Comparable<Sim> {
     
     private static String getIdentString(Sim sim) {
         
-        return sim == null ? "" : "sim." + sim.sim_ident + "/" + sim.sex;
+        return sim == null ? "" : "sim." + sim.SIM_IDENT + "/" + sim.sex;
     }
     
     /**
@@ -115,7 +115,7 @@ public class Sim implements Comparable<Sim> {
      * The setter method {@link #setMate} sets the current's {@link Sim}'s 
      * mating partner.
      *
-     * @param mate The current {@link Sim}'s mating {@link Sim}
+     * @param mate The mating partner to assign to this {@link Sim}
      */
     
     public void setMate(Sim mate) {
@@ -185,6 +185,22 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
+     * The method {@link #isInARelationship} checks whether the current
+     * {@link Sim} has a faithful and alive mating partner at the given time.
+     * 
+     * @param time Time at which the test is to be undertaken
+     * @return true if the current {@link Sim} has a mating partner<li>false
+     * otherwise</li>
+     */
+     
+    public boolean isInARelationship(double time) {
+        
+        return mate != null
+            && mate.getDeathTime() > time
+            && mate.getMate() == this;
+    }
+    
+    /**
      * The method {@link #isMatingAge} checks whether the current {@link Sim}
      * is of mating age at the given time.
      * 
@@ -199,29 +215,12 @@ public class Sim implements Comparable<Sim> {
             
             double age = time - getBirthTime();
             
-            return
-                Sex.F.equals(getSex()) ?
-                    age >= MIN_MATING_AGE_F && age <= MAX_MATING_AGE_F
-                    : age >= MIN_MATING_AGE_M && age <= MAX_MATING_AGE_M;
+            return Sex.F.equals(getSex()) ?
+                    age >= MIN_MATING_AGE_F && age <= MAX_MATING_AGE_F :
+                    age >= MIN_MATING_AGE_M && age <= MAX_MATING_AGE_M;
         }
         
         return false;
-    }
-    
-    /**
-     * The method {@link #isInARelationship} checks whether the current
-     * {@link Sim} has a faithful and alive mating partner at the given time.
-     * 
-     * @param time Time at which the test is to be undertaken
-     * @return true if the current {@link Sim} has a mating partner<li>false
-     * otherwise</li>
-     */
-     
-    public boolean isInARelationship(double time) {
-        
-        return mate != null
-            && mate.getDeathTime() > time
-            && mate.getMate() == this;
     }
     
     /** 
