@@ -138,8 +138,9 @@ public class AgeModel {
             
             // first five iteration kept 
             if (iter > 5
-                && (Math.abs(old_espan - espan) < 1e-7 * old_espan
-                    || (espan == 0.0 && old_espan == 0.0))) {
+            && (Math.abs(old_espan - espan) < 1e-7 * old_espan
+                || (espan == 0.0 && old_espan == 0.0))) {
+                
                 break;
             }
             
@@ -209,6 +210,7 @@ public class AgeModel {
         sb.append("[acc ").append(ACCIDENT_RATE).append(", age ")
         .append(DEATH_RATE).append(", agefactor ").append(AGE_FACTOR)
         .append("]");
+        
         return sb.toString();
     }
 }

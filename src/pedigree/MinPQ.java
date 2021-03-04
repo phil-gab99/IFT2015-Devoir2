@@ -17,8 +17,8 @@ public class MinPQ {
     private int n;
     
     /**
-     * The constructor method {@link MinPQ} initializes the priority queue with
-     * a starting given capacity.
+     * The constructor method {@link #MinPQ(int)} initializes the priority
+     * queue with a starting given capacity.
      *
      * @param capacity Starting capacity of priority queue
      */
@@ -30,8 +30,8 @@ public class MinPQ {
     }
     
     /**
-     * The constructor method {@link MinPQ} initializes the priority queue with
-     * default capacity.
+     * The constructor method {@link #MinPQ()} initializes the priority queue
+     * with default capacity.
      */
     
     public MinPQ() {
@@ -40,8 +40,8 @@ public class MinPQ {
     }
     
     /**
-     * The constructor method {@link MinPQ} initializes the priority queue with
-     * a given array of {@link Event}s.
+     * The constructor method {@link #MinPQ(Event[])} initializes the priority
+     * queue with a given array of {@link Event}s.
      *
      * @param events Array of starting {@link Event}s
      */
@@ -58,7 +58,7 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #isEmpty} indicates whether the priority queue is
+     * The method {@link #isEmpty()} indicates whether the priority queue is
      * empty or not.
      * 
      * @return {@code true} if this priority queue is empty<li>{@code false}
@@ -71,8 +71,8 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #insert} adds a new {@link Event} to the priority
-     * queue.
+     * The method {@link #insert(Event)} adds a new {@link Event} to the
+     * priority queue.
      *
      * @param v {@link Event} to add onto priority queue
      */
@@ -90,7 +90,7 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #size} retrieves the size of the priority queue.
+     * The method {@link #size()} retrieves the size of the priority queue.
      * 
      * @return The number of {@link Event}s in the priority queue
      */
@@ -101,7 +101,7 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #delMin} retrieves and removes the highest priority
+     * The method {@link #delMin()} retrieves and removes the highest priority
      * element of this priority queue
      *
      * @return The highest priority element of this priority queue
@@ -125,7 +125,7 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #peek} retrieves the minimum element of the priority
+     * The method {@link #peek()} retrieves the minimum element of the priority
      * queue.
      *
      * @return The highest priority element of this priority queue
@@ -143,7 +143,7 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #resize} resizes the priority queue to the given
+     * The method {@link #resize(int)} resizes the priority queue to the given
      * capacity.
      *
      * @param capacity New capacity of the priority queue
@@ -162,8 +162,9 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #swim} correctly positions an {@link Event} up
-     * through the binary heap structure to preserve the min-heap property.
+     * The helper method {@link #swim(int)} correctly positions an
+     * {@link Event} up through the binary heap structure to preserve the
+     * min-heap property.
      *
      * @param i Index of the {@link Event} to position
      */
@@ -178,8 +179,9 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #sink} correctly positions an {@link Event}
-     * down through the binary heap to preserve the min-heap property.
+     * The helper method {@link #sink(int)} correctly positions an
+     * {@link Event} down through the binary heap to preserve the min-heap
+     * property.
      *
      * @param i Index of the {@link Event} to position
      */
@@ -207,9 +209,9 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #greater} compares two {@link Event}s at the
-     * given indeces and determines whether the first is greater than the
-     * second.
+     * The helper method {@link #greater(int, int)} compares two {@link Event}s
+     * at the given indeces and determines whether the first is greater than
+     * the second.
      *
      * @param i Index of first {@link Event}
      * @param j Index of second {@link Event}
@@ -225,8 +227,8 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #swap} positionnally swaps two {@link Event}s
-     * in the priority queue at the given indeces
+     * The helper method {@link #swap(int, int)} positionnally swaps two
+     * {@link Event}s in the priority queue at the given indeces
      */
     
     private void swap(int i, int j) {
