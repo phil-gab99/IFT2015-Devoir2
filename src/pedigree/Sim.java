@@ -1,8 +1,8 @@
 package pedigree;
 
 /**
- * The class Sim defines a virtual individual along with methods to access
- * their information.
+ * The class {@link Sim} defines a virtual individual along with methods to
+ * access their information.
  * 
  * @version 1.0 2021-03-17
  * @author Philippe Gabriel
