@@ -8,7 +8,7 @@ package pedigree;
  * @version 1.0 2021-mm-dd
  */
 
-public abstract class Event implements Comparable {
+public abstract class Event implements Comparable<Event> {
     
     private Sim subject; // Sim of interest for which Event is defined
     private double time; // Time at which given event will take place
@@ -27,6 +27,29 @@ public abstract class Event implements Comparable {
         
         this.subject = subject;
         this.time = time;
+    }
+    
+    /**
+     * The getter method {@link #getSubject()} retrieves the {@link Sim}
+     * involved with this {@link Event}.
+     *
+     * @return the subject
+     */
+    
+    public Sim getSubject() {
+    	return subject;
+    }
+    
+    /**
+     * The getter method {@link #getTime()} retrieves the time at which the
+     * {@link Event} will take place.
+     *
+     * @return Time at which {@link Event} will occur
+     */
+    
+    public double getTime() {
+        
+    	return time;
     }
     
     /** 

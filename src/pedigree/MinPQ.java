@@ -151,7 +151,7 @@ public class MinPQ {
     
     private void resize(int capacity) {
         
-        Event[] temp = new Event[capcity];
+        Event[] temp = new Event[capacity];
         
         for (int i = 0; i < n; i++) {
             

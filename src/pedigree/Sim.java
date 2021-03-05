@@ -66,6 +66,18 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
+     * The constructor method {@link #Sim()} initializes a founder {@link Sim}
+     * with by randomly selecting a gender.
+     *
+     * @param sex The {@link Sim}'s gender
+     */
+    
+    public Sim() {
+        
+        this(Math.random() < 0.5 ? Sex.M : Sex.F);
+    }
+    
+    /**
      * The getter method {@link #getIdentString(Sim)} retrieves the given
      * {@link Sim}'s identity.
      * 
@@ -176,6 +188,20 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
+     * The method {@link #isAlive()} checks if the current {@link Sim} is
+     * alive at the given time or not.
+     *
+     * @param time Time at which to make the comparison
+     * @return {@code true} if the current {@link Sim} is alive<li>
+     * {@code false} otherwise</li>
+     */
+    
+    public boolean isAlive(double time) {
+        
+        return deathtime > time;
+    }
+    
+    /**
      * The method {@link #isFounder()} checks if the current {@link Sim} is a
      * founder or not.
      * 
@@ -200,8 +226,8 @@ public class Sim implements Comparable<Sim> {
     public boolean isInARelationship(double time) {
         
         return mate != null
-            && mate.getDeathTime() > time
-            && mate.getMate() == this;
+            && mate.deathtime > time
+            && mate.mate == this;
     }
     
     /**
@@ -215,11 +241,11 @@ public class Sim implements Comparable<Sim> {
     
     public boolean isMatingAge(double time) {
         
-        if (time < getDeathTime()) {
+        if (isAlive(time)) {
             
-            double age = time - getBirthTime();
+            double age = time - birthtime;
             
-            return Sex.F.equals(getSex()) ?
+            return Sex.F.equals(sex) ?
                     age >= MIN_MATING_AGE_F && age <= MAX_MATING_AGE_F :
                     age >= MIN_MATING_AGE_M && age <= MAX_MATING_AGE_M;
         }
