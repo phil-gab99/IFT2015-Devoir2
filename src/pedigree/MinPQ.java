@@ -40,24 +40,6 @@ public class MinPQ {
     }
     
     /**
-     * The constructor method {@link #MinPQ(Event[])} initializes the priority
-     * queue with a given array of {@link Event}s.
-     *
-     * @param events Array of starting {@link Event}s
-     */
-    
-    public MinPQ(Event[] events) {
-    
-        n = 0;
-        pq = new Event[events.length];
-    
-        for (Event e : events) {
-    
-            insert(e);
-        }
-    }
-    
-    /**
      * The method {@link #isEmpty()} indicates whether the priority queue is
      * empty or not.
      * 

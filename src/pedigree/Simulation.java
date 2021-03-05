@@ -11,53 +11,8 @@ import java.util.Random;
 
 public class Simulation {
     
-    AgeModel model;
-    MinPQ eventQ;
-    Random rnd;
-    
-    public Simulation() {
-        
-        model = new AgeModel();
-        eventQ = new MinPQ();
-        rnd = new Random();
-    }
-    
-    public Simulation(int capacity) {
-        
-        model = new AgeModel();
-        eventQ = new MinPQ(capacity);
-        rnd = new Random();
-    }
-    
-    public Simulation(Event[] events) {
-        
-        model = new AgeModel();
-        eventQ = new MinPQ(events);
-        rnd = new Random();
-    }
-    
-    public Simulation(double deathRate, double accidentRate, double ageScale) {
-        
-        model = new AgeModel(deathRate, accidentRate, ageScale);
-        eventQ = new MinPQ();
-        rnd = new Random();
-    }
-    
-    public Simulation(double deathRate, double accidentRate, double ageScale,
-    int capacity) {
-        
-        model = new AgeModel(deathRate, accidentRate, ageScale);
-        eventQ = new MinPQ(capacity);
-        rnd = new Random();
-    }
-    
-    public Simulation(double deathRate, double accidentRate, double ageScale,
-    Event[] events) {
-        
-        model = new AgeModel(deathRate, accidentRate, ageScale);
-        eventQ = new MinPQ(events);
-        rnd = new Random();
-    }
+    private static AgeModel model;
+    private static MinPQ eventQ;
     
     /**
      * The method {@link #simulate(int, double)}
@@ -68,13 +23,10 @@ public class Simulation {
     
     public static void simulate(int n, double tMax) {
         
-        AgeModel model = new AgeModel();
-        MinPQ eventQ = new MinPQ();
+        model = new AgeModel();
+        eventQ = new MinPQ();
         
-        for (int i = 0; i < n; i++) {
-            
-            eventQ.insert(new Birth(new Sim(), 0.0));
-        }
+        generateFounders(n);
         
         while (!eventQ.isEmpty()) {
             
@@ -90,39 +42,71 @@ public class Simulation {
                 
                 if (e instanceof Birth) {
                     
-                    // Setting the appropriate random death time
-                    e.getSubject().setDeathTime(e.getTime()
-                    + model.randomAge(new Random()));
-                    
-                    // Add Death Event for this Sim
-                    eventQ.insert(new Death(e.getSubject(),
-                    e.getSubject().getDeathTime()));
-                    
-                    // If the Sim is a woman, add a Reproduction Event
-                    if (e.getSubject().getSex().equals(Sim.Sex.F)) {
-                        
-                        // Add reproduction event
-                    }
-                    
-                    // Add the sim to structure for population
+                    birthSim(e);
                 } else if (e instanceof Death) {
                     
-                    // Remove the sim from structure
+                    deathSim(e);
                 } else if (e instanceof Reproduction) {
                     
-                    // If Sim is dead, do nothing
-                    if (e.getSubject().isAlive(e.getTime())) {
-                        
-                        // If the female Sim is of mating age
-                        if (e.getSubject().isMatingAge(e.getTime())) {
-                            
-                            // Add AssignFather Event for the newborn child
-                            eventQ.insert(new AssignFather(e.getSubject(), e.getTime()));
-                            // Sim 
-                        }
-                    }
+                    reproductionSim(e);
                 }
             }
         }
+    }
+    
+    private static void generateFounders(int n) {
+        
+        for (int i = 0; i < n; i++) {
+            
+            eventQ.insert(new Birth(new Sim(), 0.0));
+        }
+    }
+    
+    private static void birthSim(Event e) {
+        
+        // Setting the appropriate random death time
+        e.getSubject().setDeathTime(e.getTime()
+        + model.randomAge(new Random()));
+        
+        // Add Death Event for this Sim
+        eventQ.insert(new Death(e.getSubject(),
+        e.getSubject().getDeathTime()));
+        
+        // If the Sim is a woman, add a Reproduction Event
+        if (e.getSubject().getSex().equals(Sim.Sex.F)) {
+            
+            // Add reproduction event
+        }
+        
+        // Add the sim to structure for population
+    }
+    
+    private static void deathSim(Event e) {
+        
+        // Remove the sim from structure
+    }
+    
+    private static void reproductionSim(Event e) {
+        
+        // If Sim is dead, do nothing
+        if (e.getSubject().isAlive(e.getTime())) {
+            
+            // If the female Sim is of mating age
+            if (e.getSubject().isMatingAge(e.getTime())) {
+                
+                // Choose father for the newborn child
+                chooseFatherSim(e);
+                
+                // Birth of their baby
+                eventQ.insert(new Birth(new Sim(e.getSubject(), e.getSubject().getMate(), e.getTime()), e.getTime()));
+            }
+            
+            // Add reproduction event
+        }
+    }
+    
+    private static void chooseFatherSim(Event e) {
+        
+        
     }
 }
