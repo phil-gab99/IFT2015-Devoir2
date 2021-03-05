@@ -107,6 +107,12 @@ public class Simulation {
     
     private static void chooseFatherSim(Event e) {
         
-        
+        if (e.getSubject().isInARelationship(e.getTime())) {
+            
+            // f probability stay with her mate, 1 - f random valid man
+        } else {
+            
+            // Choose another valid man 10 %
+        }
     }
 }
