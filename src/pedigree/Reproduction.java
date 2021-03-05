@@ -4,8 +4,8 @@ package pedigree;
  * The class {@link Reproduction} defines an {@link Event} which indicates the
  * act of reproduction between two partner {@link Sim}s.
  * 
- * @author Philippe Gabriel
  * @version 1.0 2021-mm-dd
+ * @author Philippe Gabriel
  */
 
 public class Reproduction extends Event {

@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 /**
  * The class {@link MinPQ} defines a min priority queue of {@link Event}s.
  * 
- * @author Philippe Gabriel
  * @version 1.0 2021-mm-dd
+ * @author Philippe Gabriel
  */
 
 public class MinPQ {

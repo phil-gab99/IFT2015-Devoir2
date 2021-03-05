@@ -4,8 +4,8 @@ package pedigree;
  * The abstract class {@link Event} defines the common attributes of any
  * {@link Event} type object.
  * 
- * @author Philippe Gabriel
  * @version 1.0 2021-mm-dd
+ * @author Philippe Gabriel
  */
 
 public abstract class Event implements Comparable<Event> {

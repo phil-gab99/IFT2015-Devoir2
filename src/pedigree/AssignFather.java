@@ -5,8 +5,8 @@ package pedigree;
  * male {@link Sim} with which the female {@link Sim} will mate for the current
  * baby {@link Sim}.
  * 
- * @author Philippe Gabriel
  * @version 1.0 2021-mm-dd
+ * @author Philippe Gabriel
  */
 
 public class AssignFather extends Event {

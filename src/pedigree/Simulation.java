@@ -2,7 +2,62 @@ package pedigree;
 
 import java.util.Random;
 
+/**
+ * The class {@link Simulation} runs a simulation of {@link Event}s and traces
+ * 
+ * @version 1.0 2021-mm-dd
+ * @author Philippe Gabriel
+ */
+
 public class Simulation {
+    
+    AgeModel model;
+    MinPQ eventQ;
+    Random rnd;
+    
+    public Simulation() {
+        
+        model = new AgeModel();
+        eventQ = new MinPQ();
+        rnd = new Random();
+    }
+    
+    public Simulation(int capacity) {
+        
+        model = new AgeModel();
+        eventQ = new MinPQ(capacity);
+        rnd = new Random();
+    }
+    
+    public Simulation(Event[] events) {
+        
+        model = new AgeModel();
+        eventQ = new MinPQ(events);
+        rnd = new Random();
+    }
+    
+    public Simulation(double deathRate, double accidentRate, double ageScale) {
+        
+        model = new AgeModel(deathRate, accidentRate, ageScale);
+        eventQ = new MinPQ();
+        rnd = new Random();
+    }
+    
+    public Simulation(double deathRate, double accidentRate, double ageScale,
+    int capacity) {
+        
+        model = new AgeModel(deathRate, accidentRate, ageScale);
+        eventQ = new MinPQ(capacity);
+        rnd = new Random();
+    }
+    
+    public Simulation(double deathRate, double accidentRate, double ageScale,
+    Event[] events) {
+        
+        model = new AgeModel(deathRate, accidentRate, ageScale);
+        eventQ = new MinPQ(events);
+        rnd = new Random();
+    }
     
     /**
      * The method {@link #simulate(int, double)}

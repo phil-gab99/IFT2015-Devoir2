@@ -79,10 +79,10 @@ public class AgeModel {
      * 
      */
     
-    public AgeModel(double DEATH_RATE, double ACCIDENT_RATE, double ageScale) {
+    public AgeModel(double deathRate, double accidentRate, double ageScale) {
         
-        this.DEATH_RATE = DEATH_RATE;
-        this.ACCIDENT_RATE = ACCIDENT_RATE;
+        this.DEATH_RATE = deathRate;
+        this.ACCIDENT_RATE = accidentRate;
         this.AGE_FACTOR = Math.exp(ageScale / DEATH_RATE);
     }
     
