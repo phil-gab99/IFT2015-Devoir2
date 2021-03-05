@@ -33,7 +33,7 @@ public class Sim implements Comparable<Sim> {
     /**
      * The constructor method {@link #Sim(Sim, Sim, double, Sex)} initializes a
      * new {@link Sim} with given mother and father {@link Sim}s as well as
-     * their birth date and and gender.
+     * their birth date and gender.
      * 
      * @param mother The {@link Sim}'s mother
      * @param father The {@link Sim}'s father
@@ -52,6 +52,21 @@ public class Sim implements Comparable<Sim> {
         this.sex = sex;
         
         this.SIM_IDENT = nextSimIdx++;
+    }
+    
+    /**
+     * The constructor method {@link #Sim(Sim, Sim, double)} initializes a new
+     * {@link Sim} with given mother and father {@link Sim}s as well as
+     * their birth date and a random gender.
+     * 
+     * @param mother The {@link Sim}'s mother
+     * @param father The {@link Sim}'s father
+     * @param birthtime The {@link Sim}'s birth date
+     */
+    
+    protected Sim(Sim mother, Sim father, double birthtime) {
+        
+        this(mother, father, birthtime, Math.random() < 0.5 ? Sex.M : Sex.F);
     }
     
     /**

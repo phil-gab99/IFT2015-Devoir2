@@ -30,13 +30,20 @@ public class Simulation {
                 break;
             }
             
-            if (e.getSubject().getDeathTime() > e.getTime()) {
+            // If a death time has not been set or the Sim is still alive
+            if (e.getSubject().isAlive(e.getTime())) {
                 
                 if (e instanceof Birth) {
                     
-                    eventQ.insert(new Death(e.getSubject(),
-                    e.getTime() + model.randomAge(new Random())));
+                    // Setting the appropriate random death time
+                    e.getSubject().setDeathTime(e.getTime()
+                    + model.randomAge(new Random()));
                     
+                    // Add Death Event for this Sim
+                    eventQ.insert(new Death(e.getSubject(),
+                    e.getSubject().getDeathTime()));
+                    
+                    // If the Sim is a woman, add a Reproduction Event
                     if (e.getSubject().getSex().equals(Sim.Sex.F)) {
                         
                         // Add reproduction event
@@ -48,9 +55,17 @@ public class Simulation {
                     // Remove the sim from structure
                 } else if (e instanceof Reproduction) {
                     
-                    // if () {
-                    // 
-                    // }
+                    // If Sim is dead, do nothing
+                    if (e.getSubject().isAlive(e.getTime())) {
+                        
+                        // If the female Sim is of mating age
+                        if (e.getSubject().isMatingAge(e.getTime())) {
+                            
+                            // Add AssignFather Event for the newborn child
+                            eventQ.insert(new AssignFather(e.getSubject(), e.getTime()));
+                            // Sim 
+                        }
+                    }
                 }
             }
         }
