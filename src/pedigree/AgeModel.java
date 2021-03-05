@@ -52,17 +52,20 @@ public class AgeModel {
         // plot for distribution function
             // 1st and 3rd columns should match
             // (empirical vs. theoretical cumulative distribution function)
-        for (int r = 0; r<smp_size; r++) {
-            
-            System.out.println((1 + r) + "\t" + lifespan[r] + "\t" +
-            smp_size * (1.0 - model.getSurvival(lifespan[r])));
-        }
+        // for (int r = 0; r<smp_size; r++) {
+        // 
+        //     System.out.println((1 + r) + "\t" + lifespan[r] + "\t" +
+        //     smp_size * (1.0 - model.getSurvival(lifespan[r])));
+        // }
         
         double span = model.expectedParenthoodSpan(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         
-        double stable_rate = 2.0 / span;
-        System.out.println("avg\t" + avg + "\tmating span(mother): " + span +
-        "\tstable " + stable_rate + "\t// 1/" + span / 2.0);
+        System.out.println(span);
+        
+        double stable_rate = 3.0 / span;
+        System.out.println(stable_rate);
+        // System.out.println("avg\t" + avg + "\tmating span(mother): " + span +
+        // "\tstable " + stable_rate + "\t// 1/" + span / 2.0);
     }
     
     private final double DEATH_RATE;

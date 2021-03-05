@@ -1,5 +1,6 @@
 package pedigree;
 
+import java.lang.reflect.Array;
 import java.util.NoSuchElementException;
 
 /**
@@ -14,7 +15,7 @@ public class MinPQ<T extends Comparable<T>> {
     
     static final int DEFAULT_CAPACITY = 10;
     
-    private T[] pq;
+    private Object[] pq;
     private int n;
     
     /**
@@ -27,14 +28,7 @@ public class MinPQ<T extends Comparable<T>> {
     public MinPQ(int capacity) {
         
         n = 0;
-        
-        if (T instanceof Event) {
-            
-            pq = new Event[capacity];
-        } else if (T instanceof Sim) {
-            
-            pq = new Sim[capacity];
-        }
+        pq = new Object[capacity];
     }
     
     /**
@@ -45,6 +39,12 @@ public class MinPQ<T extends Comparable<T>> {
     public MinPQ() {
         
         this(DEFAULT_CAPACITY);
+    }
+    
+    @SuppressWarnings("unchecked")
+    T pq(int index) {
+        
+        return (T)pq[index];
     }
     
     /**
@@ -129,7 +129,7 @@ public class MinPQ<T extends Comparable<T>> {
             throw new NoSuchElementException("Priority queue underflow");
         }
         
-        return pq[1];
+        return pq(1);
     }
     
     /**
@@ -141,20 +141,11 @@ public class MinPQ<T extends Comparable<T>> {
     
     private void resize(int capacity) {
         
-        T[] temp;
-        
-        if (T instanceof Event) {
-            
-            temp = new Event[capacity];
-        } else if (T instanceof Sim) {
-            
-            temp = new Sim[capacity];
-        }
-        
+        Object[] temp = new Object[capacity];
         
         for (int i = 0; i < n; i++) {
             
-            temp[i] = pq[i];
+            temp[i] = pq(i);
         }
         
         pq = temp;
@@ -220,7 +211,7 @@ public class MinPQ<T extends Comparable<T>> {
     
     private boolean greater(int i, int j) {
         
-        return pq[i].compareTo(pq[j]) > 0;
+        return pq(i).compareTo(pq(j)) > 0;
     }
     
     /**
@@ -230,8 +221,8 @@ public class MinPQ<T extends Comparable<T>> {
     
     private void swap(int i, int j) {
         
-        T temp = pq[i];
-        pq[i] = pq[j];
+        T temp = pq(i);
+        pq[i] = pq(j);
         pq[j] = temp;
     }
 }

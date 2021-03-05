@@ -12,7 +12,7 @@ import java.util.Random;
 public class Simulation {
     
     private static AgeModel model;
-    private static MinPQ eventQ;
+    private static MinPQ<Event> eventQ;
     
     /**
      * The method {@link #simulate(int, double)}
@@ -24,7 +24,7 @@ public class Simulation {
     public static void simulate(int n, double tMax) {
         
         model = new AgeModel();
-        eventQ = new MinPQ();
+        eventQ = new MinPQ<Event>();
         
         generateFounders(n);
         
