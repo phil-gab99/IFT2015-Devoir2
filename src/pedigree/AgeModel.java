@@ -69,8 +69,10 @@ public class AgeModel {
     private final double ACCIDENT_RATE;
     private final double AGE_FACTOR;
     
-    private static final double DEFAULT_DEATH_RATE = 12.5;
-    private static final double DEFAULT_ACCIDENT_RATE = 0.01; // Yearly rate
+    // Yearly rates
+    private static final double DEFAULT_DEATH_RATE = 12.5;    // Doubles every 8 years
+    private static final double DEFAULT_ACCIDENT_RATE = 0.01; // Constant accident rate
+    
     private static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
     
     /**

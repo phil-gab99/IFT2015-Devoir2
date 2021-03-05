@@ -3,17 +3,18 @@ package pedigree;
 import java.util.NoSuchElementException;
 
 /**
- * The class {@link MinPQ} defines a min priority queue of {@link Event}s.
+ * The class {@link MinPQ} defines a generic min priority queue of comparable
+ * objects
  * 
  * @version 1.0 2021-mm-dd
  * @author Philippe Gabriel
  */
 
-public class MinPQ {
+public class MinPQ<T extends Comparable<T>> {
     
     static final int DEFAULT_CAPACITY = 10;
     
-    private Event[] pq;
+    private T[] pq;
     private int n;
     
     /**
@@ -26,7 +27,14 @@ public class MinPQ {
     public MinPQ(int capacity) {
         
         n = 0;
-        pq = new Event[capacity];
+        
+        if (T instanceof Event) {
+            
+            pq = new Event[capacity];
+        } else if (T instanceof Sim) {
+            
+            pq = new Sim[capacity];
+        }
     }
     
     /**
@@ -53,13 +61,13 @@ public class MinPQ {
     }
     
     /**
-     * The method {@link #insert(Event)} adds a new {@link Event} to the
+     * The method {@link #insert(T)} adds a new {@link T} type object to the
      * priority queue.
      *
-     * @param v {@link Event} to add onto priority queue
+     * @param v {@link T} type to add onto priority queue
      */
     
-    public void insert(Event v) {
+    public void insert(T v) {
         
         // Doubling capacity if necessary
         if (n == pq.length - 1) {
@@ -74,7 +82,7 @@ public class MinPQ {
     /**
      * The method {@link #size()} retrieves the size of the priority queue.
      * 
-     * @return The number of {@link Event}s in the priority queue
+     * @return The number of elements in the priority queue
      */
     
     public int size() {
@@ -90,9 +98,9 @@ public class MinPQ {
      * @throws NoSuchElementException if priority queue is empty
      */
     
-    public Event delMin() {
+    public T delMin() {
         
-        Event min = peek();
+        T min = peek();
         
         swap(1, n--);
         sink(1);
@@ -114,7 +122,7 @@ public class MinPQ {
      * @throws NoSuchElementException if priority queue is empty
      */
     
-    public Event peek() throws NoSuchElementException {
+    public T peek() throws NoSuchElementException {
         
         if (isEmpty()) {
             
@@ -133,7 +141,16 @@ public class MinPQ {
     
     private void resize(int capacity) {
         
-        Event[] temp = new Event[capacity];
+        T[] temp;
+        
+        if (T instanceof Event) {
+            
+            temp = new Event[capacity];
+        } else if (T instanceof Sim) {
+            
+            temp = new Sim[capacity];
+        }
+        
         
         for (int i = 0; i < n; i++) {
             
@@ -144,9 +161,8 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #swim(int)} correctly positions an
-     * {@link Event} up through the binary heap structure to preserve the
-     * min-heap property.
+     * The helper method {@link #swim(int)} correctly positions an element
+     * up through the binary heap structure to preserve the min-heap property.
      *
      * @param i Index of the {@link Event} to position
      */
@@ -161,11 +177,10 @@ public class MinPQ {
     }
     
     /**
-     * The helper method {@link #sink(int)} correctly positions an
-     * {@link Event} down through the binary heap to preserve the min-heap
-     * property.
+     * The helper method {@link #sink(int)} correctly positions an element
+     * down through the binary heap to preserve the min-heap property.
      *
-     * @param i Index of the {@link Event} to position
+     * @param i Index of the element to position
      */
     
     private void sink(int i) {
@@ -210,12 +225,12 @@ public class MinPQ {
     
     /**
      * The helper method {@link #swap(int, int)} positionnally swaps two
-     * {@link Event}s in the priority queue at the given indeces
+     * elements in the priority queue at the given indeces
      */
     
     private void swap(int i, int j) {
         
-        Event temp = pq[i];
+        T temp = pq[i];
         pq[i] = pq[j];
         pq[j] = temp;
     }
