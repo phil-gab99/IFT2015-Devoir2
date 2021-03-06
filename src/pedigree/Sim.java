@@ -47,11 +47,11 @@ public class Sim implements Comparable<Sim> {
         this.father = father;
         
         this.birthtime = birthtime;
-        this.deathtime = Double.POSITIVE_INFINITY;
+        deathtime = Double.POSITIVE_INFINITY;
         
         this.sex = sex;
         
-        this.SIM_IDENT = nextSimIdx++;
+        SIM_IDENT = nextSimIdx++;
     }
     
     /**

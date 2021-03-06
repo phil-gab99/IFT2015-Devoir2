@@ -33,10 +33,11 @@ public abstract class Event implements Comparable<Event> {
      * The getter method {@link #getSubject()} retrieves the {@link Sim}
      * involved with this {@link Event}.
      *
-     * @return the subject
+     * @return The subject {@link Sim} related with this {@link Event}
      */
     
     public Sim getSubject() {
+        
     	return subject;
     }
     
@@ -68,10 +69,5 @@ public abstract class Event implements Comparable<Event> {
     public int compareTo(Event e) {
         
         return Double.compare(time, e.time);
-    }
-    
-    public String toString() {
-        
-        return getClass().getSimpleName() + ": " + subject + " - " + time;
     }
 }

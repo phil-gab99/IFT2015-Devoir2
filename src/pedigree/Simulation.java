@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * The class {@link Simulation} runs a simulation of {@link Event}s and traces
+ * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
+ * the population of {@link Sim}s following the events.
  * 
  * @version 1.0 2021-mm-dd
  * @author Philippe Gabriel
@@ -18,10 +19,32 @@ public class Simulation {
     private static double poissonPointProcess;
     private static Random rnd;
     
+    /**
+     * The method {@link #getModel()} retrieves the associated model with the
+     * simulation.
+     *
+     * @return The associated model
+     */
+    
     public static AgeModel getModel() {
         
         return model;
     }
+    
+    /**
+     * The method
+     * {@link #setModelCustomParams(double, double, double, int, double)}
+     * allows to modify the parameters of the model according to the passed
+     * values
+     *
+     * @param deathRate The annual death rate
+     * @param accidentRate The annual accident rate
+     * @param loyaltyFactor The loyalty factor which determines how loyal a
+     * {@link Sim} partner is to their mate
+     * @param avgLifetimeOffspring The average number of children a mother
+     * {@link Sim} will have in her lifetime
+     * @param ageScale Maximum age with death rate 1
+     */
     
     public static void setModelCustomParams(double deathRate,
     double accidentRate, double loyaltyFactor, int avgLifetimeOffspring,
@@ -32,7 +55,10 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #simulate(int, double)}
+     * The method {@link #simulate(int, double)} begins the simulation of
+     * {@link Event}s stemming from the {@link Birth} of a given amount of
+     * founder {@link Sim}s. The simulation ends after the given maximum time
+     * has been reached.
      * 
      * @param n Number of founding {@link Sim}s
      * @param tMax Time length of simulation
@@ -40,18 +66,21 @@ public class Simulation {
     
     public static void simulate(int n, double tMax) {
         
+        // Initilizing model with default values if not already initialized
         if (model == null) {
             
             model = new AgeModel();
         }
         
-        poissonPointProcess = model.getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
-        
+        poissonPointProcess = model
+        .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         eventQ = new MinPQ<Event>();
         population = new MinPQ<Sim>();
         rnd = new Random();
         
         generateFounders(n);
+        
+        // The simulation stops if all Events are finished or time is up
         
         while (!eventQ.isEmpty()) {
             
@@ -74,10 +103,17 @@ public class Simulation {
                 }
             } else {
                 
-                deathSim(e);
+                deathSim();
             }
         }
     }
+    
+    /**
+     * The method {@link #generateFounders(int)} initiates the simulation with
+     * the {@link Birth} of a given amount of founder {@link Sim}s.
+     *
+     * @param n Integer indicating number of founder {@link Sim}s
+     */
     
     private static void generateFounders(int n) {
         
@@ -86,6 +122,13 @@ public class Simulation {
             eventQ.insert(new Birth(new Sim(), 0.0));
         }
     }
+    
+    /**
+     * The method {@link #birthSim(Event)} completes the appropriate procedure
+     * for the {@link Birth} of a {@link Sim}.
+     *
+     * @param e The {@link Birth} {@link Event} details
+     */
     
     private static void birthSim(Event e) {
         
@@ -102,13 +145,26 @@ public class Simulation {
             AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
         }
         
+        // Adding the newly born Sim to the population
         population.insert(e.getSubject());
     }
     
-    private static void deathSim(Event e) {
+    /**
+     * The method {@link #deathSim()} completes the appropriate procedure for
+     * the {@link Death} of a {@link Sim}.
+     */
+    
+    private static void deathSim() {
         
-        assert e.getSubject() == population.delMin();
+        population.delMin();
     }
+    
+    /**
+     * The method {@link #reproductionSim(Event)} completes the appropriate
+     * procedure for the {@link Reproduction} relating to a female {@link Sim}.
+     *
+     * @param e The {@link Reproduction} {@link Event} details
+     */
     
     private static void reproductionSim(Event e) {
         
@@ -123,7 +179,8 @@ public class Simulation {
                 // Birth of their baby
                 if (e.getSubject().isInARelationship(e.getTime())) {
                     
-                    eventQ.insert(new Birth(new Sim(e.getSubject(), e.getSubject().getMate(), e.getTime()), e.getTime()));
+                    eventQ.insert(new Birth(new Sim(e.getSubject(),
+                    e.getSubject().getMate(), e.getTime()), e.getTime()));
                 }
             }
             
@@ -134,13 +191,23 @@ public class Simulation {
         // If Sim is dead, do nothing
     }
     
+    /**
+     * The method {@link #chooseFatherSim(Event)} selects a male {@link Sim}
+     * with which the female {@link Sim} who is in the process of a
+     * {@link Reproduction} {@link Event} will mate with.
+     *
+     * @param e The {@link Reproduction} {@link Event} details
+     */
+    
     private static void chooseFatherSim(Event e) {
         
+        // Converting the priority queue to a list
         List<Sim> pop = population.toList();
         
         Sim mate;
         Sim mother = e.getSubject();
         
+        // Different procedure on whether the mother has a mate or not
         if (mother.isInARelationship(e.getTime())) {
             
             if (Math.random() < 1 - model.getLoyaltyFactor()) {
@@ -178,6 +245,15 @@ public class Simulation {
             } while (!mother.isInARelationship(e.getTime()) && !pop.isEmpty());
         }
     }
+    
+    /**
+     * The method {@link #getRandomMate(Event, List)} selects a mating
+     * {@link Sim} for the {@link Sim} associated with the given {@link Event}
+     * from the given list of {@link Sim}s in the population.
+     *
+     * @param e The {@link Event} details
+     * @param pop The {@link Sim} population
+     */
     
     private static Sim getRandomMate(Event e, List<Sim> pop) {
         

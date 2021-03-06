@@ -13,27 +13,38 @@ import java.util.Random;
 
 public class AgeModel {
     
+    // Yearly rate
+    static final double DEFAULT_DEATH_RATE = 12.5;    // Doubles every 8 years
+    static final double DEFAULT_ACCIDENT_RATE = 0.01; // Constant accident rate
+    
+    // Constant human factors
+    static final double DEFAULT_LOYALTY_FACTOR = 0.9;
+    static final int DEFAULT_AVG_LIFETIME_OFFSPRING = 2;
+    
+    static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
+    
     private final double DEATH_RATE;
     private final double ACCIDENT_RATE;
     private final double LOYALTY_FACTOR;
     private final int AVG_LIFETIME_OFFSPRING;
     private final double AGE_FACTOR;
     
-    
-    // Yearly rates
-    static final double DEFAULT_DEATH_RATE = 12.5;    // Doubles every 8 years
-    static final double DEFAULT_ACCIDENT_RATE = 0.01; // Constant accident rate
-    static final double DEFAULT_LOYALTY_FACTOR = 0.9;
-    static final int DEFAULT_AVG_LIFETIME_OFFSPRING = 2;
-    static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
-    
     /**
-     * The constructor method {@link AgeModel}
-     * 
-     * 
+     * The constructor method
+     * {@link #AgeModel(double, double, double, int, double)} assigns the
+     * different rates and factors to the model.
+     *
+     * @param deathRate The annual death rate
+     * @param accidentRate The annual accident rate
+     * @param loyaltyFactor The loyalty factor which determines how loyal a
+     * {@link Sim} partner is to their mate
+     * @param avgLifetimeOffspring The average number of children a mother
+     * {@link Sim} will have in her lifetime
+     * @param ageScale Maximum age with death rate 1
      */
     
-    public AgeModel(double deathRate, double accidentRate, double loyaltyFactor, int avgLifetimeOffspring, double ageScale) {
+    public AgeModel(double deathRate, double accidentRate,
+    double loyaltyFactor, int avgLifetimeOffspring, double ageScale) {
         
         DEATH_RATE = deathRate;
         ACCIDENT_RATE = accidentRate;
@@ -43,7 +54,7 @@ public class AgeModel {
     }
     
     /**
-     * The constructor method {@link AgeModel} instantiates a model with the
+     * The constructor method {@link #AgeModel()} instantiates a model with the
      * default human values.
      */
     
@@ -54,8 +65,9 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #expectedParenthoodSpan} calculates the expected time
-     * span (TS) for mating: average number of children will be TS/mating rate.
+     * The method {@link #expectedParenthoodSpan(double, double)} calculates
+     * the expected time span (TS) for mating: average number of children will
+     * be TS/mating rate.
      * 
      * @param minAge Minimum age of sexual maturity
      * @param maxAge Maximum age of parenting
@@ -66,7 +78,8 @@ public class AgeModel {
         
         // integration of the survival function over the mating age
         
-        // numerical integration with simpson's rule, dynamic setting of resolution
+        // numerical integration with simpson's rule, dynamic setting of
+        // resolution
         
         int n = 1; // number of intervals along the range
         double d = (maxAge - minAge) / n;
@@ -108,8 +121,8 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #getSurvival} determines the probability of surviving
-     * past the given age.
+     * The method {@link #getSurvival(double)} determines the probability of
+     * surviving past the given age.
      * 
      * @param age Age with which probability is calculated
      * @return Probability of dying after the given age
@@ -117,13 +130,30 @@ public class AgeModel {
     
     public double getSurvival(double age) {
         
-        return Math.exp(-ACCIDENT_RATE * age - DEATH_RATE * Math.expm1(age / DEATH_RATE) / AGE_FACTOR);
+        return Math.exp(-ACCIDENT_RATE * age
+        - DEATH_RATE * Math.expm1(age / DEATH_RATE) / AGE_FACTOR);
     }
+    
+    /**
+     * The method {@link #getPoissonPointProcess(double, double)} calculates
+     * the Poisson Point Process from the given age interval of maturity.
+     * 
+     * @param minAge Minimum age of sexual maturity
+     * @param maxAge Maximum age of parenting
+     * @return The Poisson Point Process rate associated with the model
+     */
     
     public double getPoissonPointProcess(double minAge, double maxAge) {
         
         return AVG_LIFETIME_OFFSPRING / expectedParenthoodSpan(minAge, maxAge);
     }
+    
+    /**
+     * The method {@link #getLoyaltyFactor()} retrieves the loyalty factor
+     * associated with this model.
+     *
+     * @return The loyalty factor associated with this model
+     */
     
     public double getLoyaltyFactor() {
         
@@ -131,7 +161,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #ramdomAge} generates a random value with the
+     * The method {@link #ramdomAge(Random)} generates a random value with the
      * specified lifespan distribution.
      * 
      * @param rnd Pseudorandom number generator for uniform[0,1]
@@ -144,14 +174,15 @@ public class AgeModel {
         double accidentalDeath = -Math.log(rnd.nextDouble()) / ACCIDENT_RATE;
         
         // pseudorandom by Gompertz for old-age
-        double ageDeath = DEATH_RATE * Math.log1p(-Math.log(rnd.nextDouble()) / DEATH_RATE * AGE_FACTOR);
+        double ageDeath = DEATH_RATE *
+        Math.log1p(-Math.log(rnd.nextDouble()) / DEATH_RATE * AGE_FACTOR);
         
         return Math.min(ageDeath, accidentalDeath);
     }
     
     /**
-     * The method {@link randomWaitingTime} generates an exponentially
-     * distributed random variable.
+     * The method {@link #randomWaitingTime(Random, double)} generates an
+     * exponentially distributed random variable.
      * 
      * @param rnd Random number generator
      * @param rate Inverse of the mean
@@ -164,7 +195,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #toString} defines the string implementation of an
+     * The method {@link #toString()} defines the string implementation of an
      * {@link AgeModel}.
      * 
      * @return String implementation of {@link AgeModel}

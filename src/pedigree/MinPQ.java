@@ -43,12 +43,6 @@ public class MinPQ<T extends Comparable<T>> {
         this(DEFAULT_CAPACITY);
     }
     
-    @SuppressWarnings("unchecked")
-    private T pq(int index) {
-        
-        return (T)pq[index];
-    }
-    
     public List<T> toList() {
         
         List<T> list = new ArrayList<>(n);
@@ -239,5 +233,21 @@ public class MinPQ<T extends Comparable<T>> {
         T temp = pq(i);
         pq[i] = pq(j);
         pq[j] = temp;
+    }
+    
+    /**
+     * The method {@link #pq(int)} returns an element of type T of the priority
+     * queue at a given index. Note that unchecked warnings are suppressed
+     * since generics check for type errors at compile-time and lack the
+     * information at runtime.
+     *
+     * @param index Index at which element of interest is
+     * @return The element of type T at the given index
+     */
+    
+    @SuppressWarnings("unchecked")
+    private T pq(int index) {
+        
+        return (T)pq[index];
     }
 }
