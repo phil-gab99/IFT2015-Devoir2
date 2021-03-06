@@ -1,11 +1,12 @@
 package pedigree;
 
-import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 /**
  * The class {@link MinPQ} defines a generic min priority queue of comparable
- * objects
+ * objects.
  * 
  * @version 1.0 2021-mm-dd
  * @author Philippe Gabriel
@@ -42,9 +43,20 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     @SuppressWarnings("unchecked")
-    T pq(int index) {
+    private T pq(int index) {
         
         return (T)pq[index];
+    }
+    
+    @SuppressWarnings("unchecked")
+    private T[] pq() {
+        
+        return (T[])pq;
+    }
+    
+    public ArrayList<T> toList() {
+        
+        return new ArrayList<>(Arrays.asList(pq()));
     }
     
     /**

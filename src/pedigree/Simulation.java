@@ -1,5 +1,6 @@
 package pedigree;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,6 +14,22 @@ public class Simulation {
     
     private static AgeModel model;
     private static MinPQ<Event> eventQ;
+    private static MinPQ<Sim> population;
+    private static double poissonPointProcess;
+    private static Random rnd;
+    
+    public static AgeModel getModel() {
+        
+        return model;
+    }
+    
+    public static void setModelCustomParams(double deathRate,
+    double accidentRate, double loyaltyFactor, int avgLifetimeOffspring,
+    double ageScale) {
+        
+        model = new AgeModel(deathRate, accidentRate, loyaltyFactor,
+        avgLifetimeOffspring, ageScale);
+    }
     
     /**
      * The method {@link #simulate(int, double)}
@@ -23,8 +40,16 @@ public class Simulation {
     
     public static void simulate(int n, double tMax) {
         
-        model = new AgeModel();
+        if (model == null) {
+            
+            model = new AgeModel();
+        }
+        
+        poissonPointProcess = model.getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
+        
         eventQ = new MinPQ<Event>();
+        population = new MinPQ<Sim>();
+        rnd = new Random();
         
         generateFounders(n);
         
@@ -65,30 +90,28 @@ public class Simulation {
     private static void birthSim(Event e) {
         
         // Setting the appropriate random death time
-        e.getSubject().setDeathTime(e.getTime()
-        + model.randomAge(new Random()));
+        e.getSubject().setDeathTime(e.getTime() + model.randomAge(rnd));
         
         // Add Death Event for this Sim
-        eventQ.insert(new Death(e.getSubject(),
-        e.getSubject().getDeathTime()));
+        eventQ.insert(new Death(e.getSubject(), e.getSubject().getDeathTime()));
         
         // If the Sim is a woman, add a Reproduction Event
         if (e.getSubject().getSex().equals(Sim.Sex.F)) {
             
-            // Add reproduction event
+            eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
+            AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
         }
         
-        // Add the sim to structure for population
+        population.insert(e.getSubject());
     }
     
     private static void deathSim(Event e) {
         
-        // Remove the sim from structure
+        assert e.getSubject() == population.delMin();
     }
     
     private static void reproductionSim(Event e) {
         
-        // If Sim is dead, do nothing
         if (e.getSubject().isAlive(e.getTime())) {
             
             // If the female Sim is of mating age
@@ -101,18 +124,73 @@ public class Simulation {
                 eventQ.insert(new Birth(new Sim(e.getSubject(), e.getSubject().getMate(), e.getTime()), e.getTime()));
             }
             
-            // Add reproduction event
+            eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
+            AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
         }
+        
+        // If Sim is dead, do nothing
     }
     
     private static void chooseFatherSim(Event e) {
         
-        if (e.getSubject().isInARelationship(e.getTime())) {
+        List<Sim> pop = population.toList();
+        
+        Sim mate;
+        Sim mother = e.getSubject();
+        
+        if (mother.isInARelationship(e.getTime())) {
             
-            // f probability stay with her mate, 1 - f random valid man
+            if (Math.random() < 1 - model.getLoyaltyFactor()) {
+                
+                mate = getRandomMate(e, pop);
+                
+                mother.setMate(mate);
+                
+                if (mate != null) {
+                    
+                    mate.setMate(mother);
+                }
+            }
         } else {
             
-            // Choose another valid man 10 %
+            do {
+                
+                mate = getRandomMate(e, pop);
+                
+                if (mate != null) {
+                    
+                    if (!mate.isInARelationship(e.getTime())) {
+                        
+                        mother.setMate(mate);
+                        mate.setMate(mother);
+                    } else {
+                        
+                        if (Math.random() < 1 - model.getLoyaltyFactor()) {
+                            
+                            mother.setMate(mate);
+                            mate.setMate(mother);
+                        }
+                    }
+                }
+            } while (!mother.isInARelationship(e.getTime()) && !pop.isEmpty());
         }
+    }
+    
+    private static Sim getRandomMate(Event e, List<Sim> pop) {
+        
+        Sim mate;
+        
+        while (mate != null && !pop.isEmpty()) {
+            
+            int rndIndex = rnd.nextInt(pop.length);
+            Sim potentialMate = pop.remove(rndIndex);
+            
+            mate = potentialMate != null
+                && !(potentialMate.getSex().equals(e.getSubject().getSex()))
+                && potentialMate.isMatingAge(e.getTime())
+                && potentialMate.isAlive(e.getTime()) ? potentialMate : null;
+        }
+        
+        return mate;
     }
 }

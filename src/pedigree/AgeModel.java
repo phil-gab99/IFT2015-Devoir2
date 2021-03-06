@@ -12,71 +12,20 @@ import java.util.Random;
  */
 
 public class AgeModel {
-
-    /**
-     * Test for tabulating random lifespans from command line.
-     * 
-     * @param args Format: death-rate accident-rate [scale]
-     */
-    
-    public static void main(String[] args) {
-        
-        int arg_idx = 0;
-        
-        double dth = Double.parseDouble(args[arg_idx++]);
-        double acc = Double.parseDouble(args[arg_idx++]);
-        double scale = DEFAULT_SCALE;
-        
-        if (arg_idx < args.length) {
-            
-            scale = Double.parseDouble(args[arg_idx++]);
-        }
-        
-        AgeModel model = new AgeModel(dth, acc, scale);
-        Random rnd = new Random();
-        
-        int smp_size = 1000; // this many random values
-        double[] lifespan = new double[smp_size];
-        double avg = 0.0;
-        
-        for (int r = 0; r < smp_size; r++) {
-            
-            double d = model.randomAge(rnd);
-            avg += d;
-            lifespan[r] = d;
-        }
-        
-        avg /= smp_size;
-        Arrays.sort(lifespan);
-        
-        // plot for distribution function
-            // 1st and 3rd columns should match
-            // (empirical vs. theoretical cumulative distribution function)
-        // for (int r = 0; r<smp_size; r++) {
-        // 
-        //     System.out.println((1 + r) + "\t" + lifespan[r] + "\t" +
-        //     smp_size * (1.0 - model.getSurvival(lifespan[r])));
-        // }
-        
-        double span = model.expectedParenthoodSpan(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
-        
-        System.out.println(span);
-        
-        double stable_rate = 3.0 / span;
-        System.out.println(stable_rate);
-        // System.out.println("avg\t" + avg + "\tmating span(mother): " + span +
-        // "\tstable " + stable_rate + "\t// 1/" + span / 2.0);
-    }
     
     private final double DEATH_RATE;
     private final double ACCIDENT_RATE;
+    private final double LOYALTY_FACTOR;
+    private final int AVG_LIFETIME_OFFSPRING;
     private final double AGE_FACTOR;
     
-    // Yearly rates
-    private static final double DEFAULT_DEATH_RATE = 12.5;    // Doubles every 8 years
-    private static final double DEFAULT_ACCIDENT_RATE = 0.01; // Constant accident rate
     
-    private static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
+    // Yearly rates
+    static final double DEFAULT_DEATH_RATE = 12.5;    // Doubles every 8 years
+    static final double DEFAULT_ACCIDENT_RATE = 0.01; // Constant accident rate
+    static final double DEFAULT_LOYALTY_FACTOR = 0.9;
+    static final int DEFAULT_AVG_LIFETIME_OFFSPRING = 2;
+    static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
     
     /**
      * The constructor method {@link AgeModel}
@@ -84,11 +33,13 @@ public class AgeModel {
      * 
      */
     
-    public AgeModel(double deathRate, double accidentRate, double ageScale) {
+    public AgeModel(double deathRate, double accidentRate, double loyaltyFactor, int avgLifetimeOffspring, double ageScale) {
         
-        this.DEATH_RATE = deathRate;
-        this.ACCIDENT_RATE = accidentRate;
-        this.AGE_FACTOR = Math.exp(ageScale / DEATH_RATE);
+        DEATH_RATE = deathRate;
+        ACCIDENT_RATE = accidentRate;
+        LOYALTY_FACTOR = loyaltyFactor;
+        AVG_LIFETIME_OFFSPRING = avgLifetimeOffspring;
+        AGE_FACTOR = Math.exp(ageScale / DEATH_RATE);
     }
     
     /**
@@ -98,33 +49,34 @@ public class AgeModel {
     
     public AgeModel() {
         
-        this(DEFAULT_DEATH_RATE, DEFAULT_ACCIDENT_RATE, DEFAULT_SCALE);
+        this(DEFAULT_DEATH_RATE, DEFAULT_ACCIDENT_RATE, DEFAULT_LOYALTY_FACTOR,
+        DEFAULT_AVG_LIFETIME_OFFSPRING, DEFAULT_SCALE);
     }
     
     /**
      * The method {@link #expectedParenthoodSpan} calculates the expected time
      * span (TS) for mating: average number of children will be TS/mating rate.
      * 
-     * @param min_age Minimum age of sexual maturity
-     * @param max_age Maximum age of parenting
+     * @param minAge Minimum age of sexual maturity
+     * @param maxAge Maximum age of parenting
      * @return Expected time span for mating
      */
     
-    public double expectedParenthoodSpan(double min_age, double max_age) {
+    public double expectedParenthoodSpan(double minAge, double maxAge) {
         
         // integration of the survival function over the mating age
         
         // numerical integration with simpson's rule, dynamic setting of resolution
         
         int n = 1; // number of intervals along the range
-        double d = (max_age - min_age) / n;
-        double st = d * 0.5 * (getSurvival(min_age) + getSurvival(max_age));
+        double d = (maxAge - minAge) / n;
+        double st = d * 0.5 * (getSurvival(minAge) + getSurvival(maxAge));
         double espan = 0.0;
         double old_espan = -1.0; // does not matter much
         
         for (int iter = 1; iter < 20; iter++) {
             
-            double x0 = min_age + d * 0.5;
+            double x0 = minAge + d * 0.5;
             double s2 = 0.0;
             
             for (int i = 0; i < n; i++) {
@@ -166,6 +118,16 @@ public class AgeModel {
     public double getSurvival(double age) {
         
         return Math.exp(-ACCIDENT_RATE * age - DEATH_RATE * Math.expm1(age / DEATH_RATE) / AGE_FACTOR);
+    }
+    
+    public double getPoissonPointProcess(double minAge, double maxAge) {
+        
+        return AVG_LIFETIME_OFFSPRING / expectedParenthoodSpan(minAge, maxAge);
+    }
+    
+    public double getLoyaltyFactor() {
+        
+        return LOYALTY_FACTOR;
     }
     
     /**
