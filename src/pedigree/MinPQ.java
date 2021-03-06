@@ -1,6 +1,7 @@
 package pedigree;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -48,15 +49,16 @@ public class MinPQ<T extends Comparable<T>> {
         return (T)pq[index];
     }
     
-    @SuppressWarnings("unchecked")
-    private T[] pq() {
+    public List<T> toList() {
         
-        return (T[])pq;
-    }
-    
-    public ArrayList<T> toList() {
+        List<T> list = new ArrayList<>(n);
         
-        return new ArrayList<>(Arrays.asList(pq()));
+        for (int i = 1; i <= n; i++) {
+            
+            list.add(pq(i));
+        }
+        
+        return list;
     }
     
     /**
@@ -155,7 +157,7 @@ public class MinPQ<T extends Comparable<T>> {
         
         Object[] temp = new Object[capacity];
         
-        for (int i = 0; i < n; i++) {
+        for (int i = 1; i <= n; i++) {
             
             temp[i] = pq(i);
         }
@@ -223,6 +225,7 @@ public class MinPQ<T extends Comparable<T>> {
     
     private boolean greater(int i, int j) {
         
+        // System.out.println(pq(i) + " " + pq(j));
         return pq(i).compareTo(pq(j)) > 0;
     }
     

@@ -179,7 +179,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The setter method {@link #setDeathTime()} sets the current's
+     * The setter method {@link #setDeathTime(double)} sets the current's
      * {@link Sim}'s death date.
      *
      * @param deathtime Death date to set for the current {@link Sim}

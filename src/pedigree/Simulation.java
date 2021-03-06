@@ -68,20 +68,20 @@ public class Simulation {
                 if (e instanceof Birth) {
                     
                     birthSim(e);
-                } else if (e instanceof Death) {
-                    
-                    deathSim(e);
                 } else if (e instanceof Reproduction) {
                     
                     reproductionSim(e);
                 }
+            } else {
+                
+                deathSim(e);
             }
         }
     }
     
     private static void generateFounders(int n) {
         
-        for (int i = 0; i < n; i++) {
+        while (n-- > 0) {
             
             eventQ.insert(new Birth(new Sim(), 0.0));
         }
@@ -121,7 +121,10 @@ public class Simulation {
                 chooseFatherSim(e);
                 
                 // Birth of their baby
-                eventQ.insert(new Birth(new Sim(e.getSubject(), e.getSubject().getMate(), e.getTime()), e.getTime()));
+                if (e.getSubject().isInARelationship(e.getTime())) {
+                    
+                    eventQ.insert(new Birth(new Sim(e.getSubject(), e.getSubject().getMate(), e.getTime()), e.getTime()));
+                }
             }
             
             eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
@@ -178,11 +181,11 @@ public class Simulation {
     
     private static Sim getRandomMate(Event e, List<Sim> pop) {
         
-        Sim mate;
+        Sim mate = null;
         
-        while (mate != null && !pop.isEmpty()) {
+        while (mate == null && !pop.isEmpty()) {
             
-            int rndIndex = rnd.nextInt(pop.length);
+            int rndIndex = rnd.nextInt(pop.size());
             Sim potentialMate = pop.remove(rndIndex);
             
             mate = potentialMate != null

@@ -69,4 +69,9 @@ public abstract class Event implements Comparable<Event> {
         
         return Double.compare(time, e.time);
     }
+    
+    public String toString() {
+        
+        return getClass().getSimpleName() + ": " + subject + " - " + time;
+    }
 }
