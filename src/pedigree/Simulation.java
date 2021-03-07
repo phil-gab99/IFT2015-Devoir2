@@ -2,9 +2,11 @@ package pedigree;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
@@ -129,7 +131,12 @@ public class Simulation {
                 
                 deathSim();
             }
+            
+            popGrowth.put(e.getTime(), population.size());
         }
+        
+        ancestralLineage(forefathers, coalescenceM);
+        ancestralLineage(foremothers, coalescenceF);
     }
     
     /**
@@ -300,5 +307,19 @@ public class Simulation {
         }
         
         return mate;
+    }
+    
+    private static void ancestralLineage(MaxPQ pop, Map<Sim, Integer> points) {
+        
+        Set<Sim> alleles = new HashSet<Sim>();
+        // Does the youngest mean to compare by age or by birthtime?
+        while (!pop.isEmpty()) {
+            
+            Sim person = pop.delMax();
+            
+            if (alleles.contains(person.get)) {
+                
+            }
+        }
     }
 }
