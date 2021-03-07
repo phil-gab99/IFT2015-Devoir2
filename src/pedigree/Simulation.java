@@ -1,6 +1,9 @@
 package pedigree;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -16,8 +19,24 @@ public class Simulation {
     private static AgeModel model;
     private static MinPQ<Event> eventQ;
     private static MinPQ<Sim> population;
+    private static MaxPQ<Sim> forefathers;
+    private static MaxPQ<Sim> foremothers;
     private static double poissonPointProcess;
     private static Random rnd;
+    
+    // Maps for plotting
+    private static Map<Double, Integer> popGrowth;
+    private static Map<Sim, Integer> coalescenceM;
+    private static Map<Sim, Integer> coalescenceF;
+    
+    // Anonymous inner type for comparing Sims using their birth dates
+    private static Comparator<Sim> comp = new Comparator<Sim>() {
+        
+        public int compare(Sim s1, Sim s2) {
+            
+            return Double.compare(s1.getBirthTime(), s2.getBirthTime());
+        }
+    };
     
     /**
      * The method {@link #getModel()} retrieves the associated model with the
@@ -72,16 +91,21 @@ public class Simulation {
             model = new AgeModel();
         }
         
-        poissonPointProcess = model
-        .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         eventQ = new MinPQ<Event>();
         population = new MinPQ<Sim>();
+        forefathers = new MaxPQ<Sim>(comp);
+        foremothers = new MaxPQ<Sim>(comp);
+        poissonPointProcess = model
+        .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
+        
+        popGrowth = new HashMap<Double, Integer>();
+        coalescenceM = new HashMap<Sim, Integer>();
+        coalescenceF = new HashMap<Sim, Integer>();
         
         generateFounders(n);
         
         // The simulation stops if all Events are finished or time is up
-        
         while (!eventQ.isEmpty()) {
             
             Event e = eventQ.delMin();
@@ -143,6 +167,11 @@ public class Simulation {
             
             eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
             AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
+            
+            foremothers.insert(e.getSubject());
+        } else {
+            
+            forefathers.insert(e.getSubject());
         }
         
         // Adding the newly born Sim to the population

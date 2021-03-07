@@ -2,24 +2,27 @@ package pedigree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * The class {@link MinPQ} defines a generic min priority queue of
- * {@link Comparable} objects.
+ * The class {@link MaxPQ} defines a generic max priority queue of objects with
+ * a {@link Comparator} defining their order or using their {@link Comparable}
+ * implementation.
  * 
  * @param T The generic type of elements on this priority queue
  * @version 1.0 2021-mm-dd
  * @author Philippe Gabriel
  */
 
-public class MinPQ<T extends Comparable<T>> {
+public class MaxPQ<T> {
     
     static final int DEFAULT_CAPACITY = 10;
     
     private Object[] pq;
     private int n;
+    private Comparator<T> comparator;
     
     /**
      * The constructor method {@link #MinPQ(int)} initializes the priority
@@ -28,7 +31,7 @@ public class MinPQ<T extends Comparable<T>> {
      * @param capacity Starting capacity of priority queue
      */
     
-    public MinPQ(int capacity) {
+    public MaxPQ(int capacity) {
         
         n = 0;
         pq = new Object[capacity];
@@ -39,28 +42,36 @@ public class MinPQ<T extends Comparable<T>> {
      * with default capacity.
      */
     
-    public MinPQ() {
+    public MaxPQ() {
         
         this(DEFAULT_CAPACITY);
     }
     
     /**
-     * The method {@link #toList()} converts the priority queue into a
-     * {@link List} type structure.
+     * The constructor method {@link #MaxPQ(int, Comparator)} initializes the
+     * priority queue with the given capacity using the given comparator.
      *
-     * @return {@link List} containing each element
+     * @param capacity Initial capacity of this priority queue
+     * @param comparator Order in which to compare the elements
      */
     
-    public List<T> toList() {
+    public MaxPQ(int capacity, Comparator<T> comparator) {
         
-        List<T> list = new ArrayList<>(n);
+        n = 0;
+        pq = new Object[capacity];
+        this.comparator = comparator;
+    }
+    
+    /**
+     * The constructor method {@link #MaxPQ(int, Comparator)} initializes the
+     * priority queue with the default capacity using the given comparator.
+     *
+     * @param comparator Order in which to compare the elements
+     */
+    
+    public MaxPQ(Comparator<T> comparator) {
         
-        for (int i = 1; i <= n; i++) {
-            
-            list.add(pq(i));
-        }
-        
-        return list;
+        this(DEFAULT_CAPACITY, comparator);
     }
     
     /**
@@ -107,16 +118,16 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #delMin()} retrieves and removes the highest priority
+     * The method {@link #delMax()} retrieves and removes the highest priority
      * element of this priority queue
      *
      * @return The highest priority element of this priority queue
      * @throws NoSuchElementException if priority queue is empty
      */
     
-    public T delMin() {
+    public T delMax() {
         
-        T min = peek();
+        T max = peek();
         
         swap(1, n--);
         sink(1);
@@ -127,11 +138,11 @@ public class MinPQ<T extends Comparable<T>> {
             resize(pq.length / 2);
         }
         
-        return min;
+        return max;
     }
     
     /**
-     * The method {@link #peek()} retrieves the minimum element of the priority
+     * The method {@link #peek()} retrieves the maximum element of the priority
      * queue.
      *
      * @return The highest priority element of this priority queue
@@ -176,7 +187,7 @@ public class MinPQ<T extends Comparable<T>> {
     
     private void swim(int i) {
         
-        while (i > 1 && greater(i / 2, i)) {
+        while (i > 1 && less(i / 2, i)) {
             
             swap(i, i / 2);
             i /= 2;
@@ -196,13 +207,13 @@ public class MinPQ<T extends Comparable<T>> {
             
             int j = 2 * i;
             
-            // Selecting the min child node
-            if (j < n && greater(j, j + 1)) {
+            // Selecting the max child node
+            if (j < n && less(j, j + 1)) {
                 
                 j++;
             }
             
-            if (!greater(i, j)) {
+            if (!less(i, j)) {
                 
                 break;
             }
@@ -213,20 +224,26 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The helper method {@link #greater(int, int)} compares two elements at
-     * the given indeces and determines whether the first is greater than the
-     * second.
+     * The helper method {@link #less(int, int)} compares two elements at the
+     * given indeces and determines whether the first is less than the second.
      *
      * @param i Index of first {@link Event}
      * @param j Index of second {@link Event}
-     * @return {@code true} if the element at index {@code i} is greater than
-     * the element at index {@code j}<li>{@code false} otherwise</li>
+     * @return {@code true} if the element at index {@code i} is less than the
+     * element at index {@code j}<li>{@code false} otherwise</li>
+     * @see java.util.Comparator
      * @see java.lang.Comparable
      */
     
-    private boolean greater(int i, int j) {
+    private boolean less(int i, int j) {
         
-        return pq(i).compareTo(pq(j)) > 0;
+        if (comparator == null) {
+            
+            return pq(i).compareTo(pq(j)) < 0;
+        } else {
+            
+            return comparator.compare(pq(i), pq(j)) < 0;
+        }
     }
     
     /**
