@@ -3,12 +3,11 @@ package pedigree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
@@ -24,15 +23,17 @@ public class Simulation {
     private static MinPQ<Event> eventQ;
     private static MinPQ<Sim> populationQ;
     private static List<Sim> populationList;
-    private static Set<Sim> foremothers;
-    private static Set<Sim> forefathers;
+    private static MinPQ<Sim> foremothersQ;
+    private static MinPQ<Sim> forefathersQ;
+    private static Set<Sim> foremothersSet;
+    private static Set<Sim> forefathersSet;
     private static double poissonPointProcess;
     private static Random rnd;
     
     // Maps for plotting
     // private static Map<Double, Integer> popGrowth;
-    private static Map<Sim, Integer> coalescenceM;
     private static Map<Sim, Integer> coalescenceF;
+    private static Map<Sim, Integer> coalescenceM;
     
     // Anonymous inner type for comparing Sims using their birth dates
     private static Comparator<Sim> comparator = new Comparator<Sim>() {
@@ -100,8 +101,8 @@ public class Simulation {
         eventQ = new MinPQ<Event>();
         populationQ = new MinPQ<Sim>();
         populationList = new ArrayList<Sim>();
-        foremothers = new HashSet<Sim>();
-        forefathers = new HashSet<Sim>();
+        foremothersQ = new HashSet<Sim>();
+        forefathersQ = new HashSet<Sim>();
         poissonPointProcess = model
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
@@ -138,11 +139,16 @@ public class Simulation {
             }
         }
         
-        populationQ.setComparator(comparator);
+        foremothersQ = new MinPQ<Sim>(comparator);
+        forefathersQ = new MinPQ<Sim>(comparator);
+        
+        foremothersSet = new HashSet<Sim>();
+        forefathersSet = new HashSet<Sim>();
         
         dividePop();
         
-        ancestralLineage();
+        ancestralFemaleLineage();
+        ancestralMaleLineage();
     }
     
     /**
@@ -320,43 +326,39 @@ public class Simulation {
     
     private static void dividePop() {
         
-        for (Sim s : populationList) {
+        while (!populationQ.isEmpty()) {
             
-            if (s.getSex().equals(Sim.Sex.F)) {
+            Sim sim = populationQ.delMin();
+            
+            if (sim.getSex().equals(Sim.Sex.F)) {
                 
-                foremothers.add(s);
+                foremothersQ.insert(sim);
+                foremothersSet.add(sim);
             } else {
                 
-                forefathers.add(s);
+                forefathersQ.insert(sim);
+                forefathersSet.add(sim);
             }
         }
     }
     
     /**
-     * The method {@link #ancestralLineage()} defines the male and female
-     * coalescences after the simulation has been completed.
+     * The method {@link #ancestralFemaleLineage()} defines female coalescences
+     * after the simulation has been completed.
      */
     
-    private static void ancestralLineage() {
+    private static void ancestralFemaleLineage() {
         
-        Sim youngest = populationQ.delMin();
+        Sim youngest = foremothersQ.delMin();
+    }
+    
+    /**
+     * The method {@link #ancestralFemaleLineage()} defines male coalescences
+     * after the simulation has been completed.
+     */
+    
+    private static void ancestralMaleLineage() {
         
-        if (youngest.getSex().equals(Sim.Sex.F)) {
-            
-            foremothers.remove(youngest);
-            
-            if (!foremothers.add(youngest.getMother())) {
-                
-                coalescenceF.put(youngest, foremothers.size());
-            }
-        } else {
-            
-            forefathers.remove(youngest);
-            
-            if (!forefather.add(youngest.getFather())) {
-                
-                coalescenceM.put(youngest, forefathers.size());
-            }
-        }
+        Sim youngest = forefathersQ.delMin();
     }
 }

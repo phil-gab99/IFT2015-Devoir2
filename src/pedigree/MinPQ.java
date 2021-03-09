@@ -74,44 +74,6 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The setter method setComparator sets the comparator 
-     *
-     * 
-     */
-    
-    public void setComparator(Comparator<T> comparator) {
-        
-        MinPQ<T> modifiedQ = new MinPQ<T>(comparator);
-        this.comparator = comparator;
-        
-        for (int i = 1; i <= n; i++) {
-            
-            modifiedQ.insert(pq(i));
-        }
-        
-        pq = modifiedQ.pq;
-    }
-    
-    /**
-     * The method {@link #toList()} converts the priority queue into a
-     * {@link List} type structure.
-     *
-     * @return {@link List} containing each element
-     */
-    
-    public List<T> toList() {
-        
-        List<T> list = new ArrayList<>(n);
-        
-        for (int i = 1; i <= n; i++) {
-            
-            list.add(pq(i));
-        }
-        
-        return list;
-    }
-    
-    /**
      * The method {@link #isEmpty()} indicates whether the priority queue is
      * empty or not.
      * 
@@ -306,7 +268,7 @@ public class MinPQ<T extends Comparable<T>> {
      *
      * @param index Index at which element of interest is
      * @return The element of type T at the given index
-     * @see /java.util.ArrayList source code for annotation idea
+     * @see the java.util.ArrayList source code for annotation idea
      */
     
     @SuppressWarnings("unchecked")
