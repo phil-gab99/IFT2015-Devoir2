@@ -1,12 +1,14 @@
 package pedigree;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Random;
+
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
@@ -21,11 +23,13 @@ public class Simulation {
     private static AgeModel model;
     private static MinPQ<Event> eventQ;
     private static MinPQ<Sim> populationQ;
-    private static Set<Sim> populationSet;
+    private static List<Sim> populationList;
+    private static Set<Sim> foremothers;
+    private static Set<Sim> forefathers;
     private static double poissonPointProcess;
     private static Random rnd;
     
-    // // Maps for plotting
+    // Maps for plotting
     // private static Map<Double, Integer> popGrowth;
     private static Map<Sim, Integer> coalescenceM;
     private static Map<Sim, Integer> coalescenceF;
@@ -95,7 +99,9 @@ public class Simulation {
         
         eventQ = new MinPQ<Event>();
         populationQ = new MinPQ<Sim>();
-        populationSet = new HashSet<Sim>();
+        populationList = new ArrayList<Sim>();
+        foremothers = new HashSet<Sim>();
+        forefathers = new HashSet<Sim>();
         poissonPointProcess = model
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
@@ -133,6 +139,9 @@ public class Simulation {
         }
         
         populationQ.setComparator(comparator);
+        
+        dividePop();
+        
         ancestralLineage();
     }
     
@@ -175,6 +184,7 @@ public class Simulation {
         
         // Adding the newly born Sim to the population
         populationQ.insert(e.getSubject());
+        populationList.add(e.getSubject());
     }
     
     /**
@@ -184,7 +194,7 @@ public class Simulation {
     
     private static void deathSim() {
         
-        populationQ.delMin();
+        populationList.remove(populationQ.delMin());
     }
     
     /**
@@ -229,9 +239,6 @@ public class Simulation {
     
     private static void chooseFatherSim(Event e) {
         
-        // Converting the priority queue to a list
-        List<Sim> pop = populationQ.toList();
-        
         Sim mate;
         Sim mother = e.getSubject();
         
@@ -240,7 +247,7 @@ public class Simulation {
             
             if (Math.random() < 1 - model.getLoyaltyFactor()) {
                 
-                mate = getRandomMate(e, pop);
+                mate = getRandomMate(e);
                 
                 mother.setMate(mate);
                 
@@ -253,7 +260,7 @@ public class Simulation {
             
             do {
                 
-                mate = getRandomMate(e, pop);
+                mate = getRandomMate(e);
                 
                 if (mate != null) {
                     
@@ -275,41 +282,81 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #getRandomMate(Event, List)} selects a mating
-     * {@link Sim} for the {@link Sim} associated with the given {@link Event}
-     * from the given list of {@link Sim}s in the population.
+     * The method {@link #getRandomMate(Event)} selects a mating {@link Sim}
+     * from our population for the {@link Sim} associated with the given
+     * {@link Event}.
      *
      * @param e The {@link Event} details
-     * @param pop The {@link Sim} population
      */
     
-    private static Sim getRandomMate(Event e, List<Sim> pop) {
+    private static Sim getRandomMate(Event e) {
+        
+        List<Sim> nonCompatSims = new ArrayList<Sim>();
         
         Sim mate = null;
         
-        while (mate == null && !pop.isEmpty()) {
+        while (mate == null && !populationList.isEmpty()) {
             
-            int rndIndex = rnd.nextInt(pop.size());
-            Sim potentialMate = pop.remove(rndIndex);
+            int rndIndex = rnd.nextInt(populationList.size());
+            Sim potentialMate = populationList.remove(rndIndex);
             
             mate = potentialMate != null
                 && !(potentialMate.getSex().equals(e.getSubject().getSex()))
                 && potentialMate.isMatingAge(e.getTime())
                 && potentialMate.isAlive(e.getTime()) ? potentialMate : null;
+                
+            nonCompatSims.add(potentialMate);
         }
+        
+        populationList.addAll(nonCompatSims);
         
         return mate;
     }
+    
+    /**
+     * The method {@link #dividePop()} divides the current population into male
+     * and female subgroups.
+     */
+    
+    private static void dividePop() {
+        
+        for (Sim s : populationList) {
+            
+            if (s.getSex().equals(Sim.Sex.F)) {
+                
+                foremothers.add(s);
+            } else {
+                
+                forefathers.add(s);
+            }
+        }
+    }
+    
+    /**
+     * The method {@link #ancestralLineage()} defines the male and female
+     * coalescences after the simulation has been completed.
+     */
     
     private static void ancestralLineage() {
         
         Sim youngest = populationQ.delMin();
         
-        if (youngest.getSex() == Sim.Sex.M) {
+        if (youngest.getSex().equals(Sim.Sex.F)) {
             
+            foremothers.remove(youngest);
             
+            if (!foremothers.add(youngest.getMother())) {
+                
+                coalescenceF.put(youngest, foremothers.size());
+            }
         } else {
             
+            forefathers.remove(youngest);
+            
+            if (!forefather.add(youngest.getFather())) {
+                
+                coalescenceM.put(youngest, forefathers.size());
+            }
         }
     }
 }
