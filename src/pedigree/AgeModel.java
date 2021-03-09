@@ -19,14 +19,14 @@ public class AgeModel {
     
     // Constant human factors
     static final double DEFAULT_LOYALTY_FACTOR = 0.9;
-    static final int DEFAULT_AVG_LIFETIME_OFFSPRING = 2;
+    static final double DEFAULT_AVG_LIFETIME_OFFSPRING = 2.0;
     
     static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
     
     private final double DEATH_RATE;
     private final double ACCIDENT_RATE;
     private final double LOYALTY_FACTOR;
-    private final int AVG_LIFETIME_OFFSPRING;
+    private final double AVG_LIFETIME_OFFSPRING;
     private final double AGE_FACTOR;
     
     /**
@@ -44,7 +44,7 @@ public class AgeModel {
      */
     
     public AgeModel(double deathRate, double accidentRate,
-    double loyaltyFactor, int avgLifetimeOffspring, double ageScale) {
+    double loyaltyFactor, double avgLifetimeOffspring, double ageScale) {
         
         DEATH_RATE = deathRate;
         ACCIDENT_RATE = accidentRate;

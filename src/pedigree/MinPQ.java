@@ -2,6 +2,7 @@ package pedigree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,6 +21,7 @@ public class MinPQ<T extends Comparable<T>> {
     
     private Object[] pq;
     private int n;
+    private Comparator<T> comparator;
     
     /**
      * The constructor method {@link #MinPQ(int)} initializes the priority
@@ -42,6 +44,52 @@ public class MinPQ<T extends Comparable<T>> {
     public MinPQ() {
         
         this(DEFAULT_CAPACITY);
+    }
+    
+    /**
+     * The constructor method {@link #MinPQ(int, Comparator)} initializes the
+     * priority queue with the given capacity using the given comparator.
+     *
+     * @param capacity Initial capacity of this priority queue
+     * @param comparator Order in which to compare the elements
+     */
+    
+    public MinPQ(int capacity, Comparator<T> comparator) {
+        
+        n = 0;
+        pq = new Object[capacity];
+        this.comparator = comparator;
+    }
+    
+    /**
+     * The constructor method {@link #MinPQ(int, Comparator)} initializes the
+     * priority queue with the default capacity using the given comparator.
+     *
+     * @param comparator Order in which to compare the elements
+     */
+    
+    public MinPQ(Comparator<T> comparator) {
+        
+        this(DEFAULT_CAPACITY, comparator);
+    }
+    
+    /**
+     * The setter method setComparator sets the comparator 
+     *
+     * 
+     */
+    
+    public void setComparator(Comparator<T> comparator) {
+        
+        MinPQ<T> modifiedQ = new MinPQ<T>(comparator);
+        this.comparator = comparator;
+        
+        for (int i = 1; i <= n; i++) {
+            
+            modifiedQ.insert(pq(i));
+        }
+        
+        pq = modifiedQ.pq;
     }
     
     /**
@@ -108,13 +156,13 @@ public class MinPQ<T extends Comparable<T>> {
     
     /**
      * The method {@link #delMin()} retrieves and removes the highest priority
-     * element of this priority queue
+     * element of this priority queue.
      *
      * @return The highest priority element of this priority queue
      * @throws NoSuchElementException if priority queue is empty
      */
     
-    public T delMin() {
+    public T delMin() throws NoSuchElementException {
         
         T min = peek();
         
@@ -138,7 +186,7 @@ public class MinPQ<T extends Comparable<T>> {
      * @throws NoSuchElementException if priority queue is empty
      */
     
-    public T peek() throws NoSuchElementException {
+    public T peek() {
         
         if (isEmpty()) {
             
@@ -226,12 +274,21 @@ public class MinPQ<T extends Comparable<T>> {
     
     private boolean greater(int i, int j) {
         
-        return pq(i).compareTo(pq(j)) > 0;
+        if (comparator == null) {
+        
+            return pq(i).compareTo(pq(j)) > 0;
+        } else {
+            
+            return comparator.compare(pq(i), pq(j)) > 0;
+        }
     }
     
     /**
      * The helper method {@link #swap(int, int)} positionnally swaps two
-     * elements in the priority queue at the given indeces
+     * elements in the priority queue at the given indeces.
+     *
+     * @param i Index of first element
+     * @param j Index of second element
      */
     
     private void swap(int i, int j) {
@@ -249,6 +306,7 @@ public class MinPQ<T extends Comparable<T>> {
      *
      * @param index Index at which element of interest is
      * @return The element of type T at the given index
+     * @see /java.util.ArrayList source code for annotation idea
      */
     
     @SuppressWarnings("unchecked")

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+import java.util.Random;
 
 /**
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
@@ -20,23 +20,23 @@ public class Simulation {
     
     private static AgeModel model;
     private static MinPQ<Event> eventQ;
-    private static MinPQ<Sim> population;
-    private static MaxPQ<Sim> forefathers;
-    private static MaxPQ<Sim> foremothers;
+    private static MinPQ<Sim> populationQ;
+    private static Set<Sim> populationSet;
     private static double poissonPointProcess;
     private static Random rnd;
     
-    // Maps for plotting
-    private static Map<Double, Integer> popGrowth;
+    // // Maps for plotting
+    // private static Map<Double, Integer> popGrowth;
     private static Map<Sim, Integer> coalescenceM;
     private static Map<Sim, Integer> coalescenceF;
     
     // Anonymous inner type for comparing Sims using their birth dates
-    private static Comparator<Sim> comp = new Comparator<Sim>() {
+    private static Comparator<Sim> comparator = new Comparator<Sim>() {
         
         public int compare(Sim s1, Sim s2) {
             
-            return Double.compare(s1.getBirthTime(), s2.getBirthTime());
+            // The "youngest" people are those with the higher birth date
+            return -Double.compare(s1.getBirthTime(), s2.getBirthTime());
         }
     };
     
@@ -68,7 +68,7 @@ public class Simulation {
      */
     
     public static void setModelCustomParams(double deathRate,
-    double accidentRate, double loyaltyFactor, int avgLifetimeOffspring,
+    double accidentRate, double loyaltyFactor, double avgLifetimeOffspring,
     double ageScale) {
         
         model = new AgeModel(deathRate, accidentRate, loyaltyFactor,
@@ -94,14 +94,13 @@ public class Simulation {
         }
         
         eventQ = new MinPQ<Event>();
-        population = new MinPQ<Sim>();
-        forefathers = new MaxPQ<Sim>(comp);
-        foremothers = new MaxPQ<Sim>(comp);
+        populationQ = new MinPQ<Sim>();
+        populationSet = new HashSet<Sim>();
         poissonPointProcess = model
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
         
-        popGrowth = new HashMap<Double, Integer>();
+        // popGrowth = new HashMap<Double, Integer>();
         coalescenceM = new HashMap<Sim, Integer>();
         coalescenceF = new HashMap<Sim, Integer>();
         
@@ -131,12 +130,10 @@ public class Simulation {
                 
                 deathSim();
             }
-            
-            popGrowth.put(e.getTime(), population.size());
         }
         
-        ancestralLineage(forefathers, coalescenceM);
-        ancestralLineage(foremothers, coalescenceF);
+        populationQ.setComparator(comparator);
+        ancestralLineage();
     }
     
     /**
@@ -174,15 +171,10 @@ public class Simulation {
             
             eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
             AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
-            
-            foremothers.insert(e.getSubject());
-        } else {
-            
-            forefathers.insert(e.getSubject());
         }
         
         // Adding the newly born Sim to the population
-        population.insert(e.getSubject());
+        populationQ.insert(e.getSubject());
     }
     
     /**
@@ -192,7 +184,7 @@ public class Simulation {
     
     private static void deathSim() {
         
-        population.delMin();
+        populationQ.delMin();
     }
     
     /**
@@ -238,7 +230,7 @@ public class Simulation {
     private static void chooseFatherSim(Event e) {
         
         // Converting the priority queue to a list
-        List<Sim> pop = population.toList();
+        List<Sim> pop = populationQ.toList();
         
         Sim mate;
         Sim mother = e.getSubject();
@@ -309,17 +301,15 @@ public class Simulation {
         return mate;
     }
     
-    private static void ancestralLineage(MaxPQ pop, Map<Sim, Integer> points) {
+    private static void ancestralLineage() {
         
-        Set<Sim> alleles = new HashSet<Sim>();
-        // Does the youngest mean to compare by age or by birthtime?
-        while (!pop.isEmpty()) {
+        Sim youngest = populationQ.delMin();
+        
+        if (youngest.getSex() == Sim.Sex.M) {
             
-            Sim person = pop.delMax();
             
-            if (alleles.contains(person.get)) {
-                
-            }
+        } else {
+            
         }
     }
 }
