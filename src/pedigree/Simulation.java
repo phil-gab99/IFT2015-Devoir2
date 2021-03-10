@@ -175,7 +175,7 @@ public class Simulation {
             if ((e.getTime() / period) > 1) {
                 
                 popGrowth.put(e.getTime(), populationQ.size());
-                period += 100;
+                period += 10;
             }
         }
         
