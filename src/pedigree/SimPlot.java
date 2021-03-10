@@ -1,24 +1,38 @@
 package pedigree;
 
-import java.awt.Color;
+import java.util.Map;
+import java.util.Arrays;
+
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JOptionPane;
+
 import javax.swing.WindowConstants;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+
+import org.jfree.chart.plot.PlotOrientation;
 
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 
-import org.jfree.chart.plot.FastScatterPlot;
-import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
 
-public class SimPlot extends JFrame {
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.DefaultXYDataset;
+
+import org.jfree.chart.axis.StandardTickUnitSource;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+
+import org.jfree.chart.axis.LogAxis;
+
+public class SimPlot {
     
     private static final int FRAME_WIDTH = 800;  //Default frame width
     private static final int FRAME_HEIGHT = 450; //Default frame height
@@ -27,20 +41,85 @@ public class SimPlot extends JFrame {
     private static final Toolkit screen = Toolkit.getDefaultToolkit();
     private static final Dimension d = screen.getScreenSize();
     
-    public SimPlot() {
+    public SimPlot(String founders, String maxTime) {
         
-        float[][] data = {{0,2,4,10,15},{1000,300,24,999,1240}};
+        JTextField numFounders = new JTextField(founders);
+        JTextField simulationTime = new JTextField(maxTime);
         
-        ValueAxis xAxis = new NumberAxis("Iliya x x x");
-        ValueAxis yAxis = new NumberAxis("Iliya y y");
+        Object[] message = {
+            "Founders: ", numFounders,
+            "Time of simulation: ", simulationTime
+        };
         
-        ChartFrame plot = new ChartFrame("My graph", new JFreeChart("Data", new FastScatterPlot(data, xAxis, yAxis)));
+        boolean validArguments = false;
         
-        plot.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        do {
+            
+            int option = JOptionPane.showConfirmDialog(null, message,
+            "Arguments", JOptionPane.OK_CANCEL_OPTION);
+            
+            if (option == JOptionPane.OK_OPTION) {
+                
+                try {
+                    
+                    if (Integer.parseInt(numFounders.getText()) >= 0
+                    && Double.parseDouble(simulationTime.getText()) >= 0) {
+                        
+                        validArguments = true;
+                    } else {
+                        
+                        JOptionPane.showMessageDialog(null,
+                        "For negative input", "Wrong argument type",
+                        JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch(NumberFormatException e) {
+                    
+                    JOptionPane.showMessageDialog(null, e.getMessage(),
+                    "Wrong argument type", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                
+                System.exit(0);
+            }
+        } while (!validArguments);
         
-        centerComponent(plot, 0);
+        Simulation.simulate(Integer.parseInt(numFounders.getText()),
+        Double.parseDouble(simulationTime.getText()));
         
-        plot.setVisible(true);
+        DefaultXYDataset SimData = new DefaultXYDataset();
+        createDataset(SimData, "Population Size", Simulation.getPopGrowth());
+        createDataset(SimData, "Foremothers", Simulation.getCoalescenceF());
+        createDataset(SimData, "Forefathers", Simulation.getCoalescenceM());
+        
+        XYPlot plot = new XYPlot(SimData, new NumberAxis("Time (1000 years)"), new LogAxis("Number of Sims"), new XYLineAndShapeRenderer());
+        
+        JFreeChart chart = new JFreeChart("Common Ancestors", JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+        
+        ChartFrame frame = new ChartFrame("Common Ancestors", chart);
+        
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        centerComponent(frame, 0);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+    
+    private void createDataset(DefaultXYDataset set, String label,  
+        Map<Double, Integer> mapData) {
+    
+        int i = 0;
+        double[][] data = new double[2][mapData.size()];
+        System.out.println("_____________________________________________");
+    
+        for (Map.Entry<Double, Integer> entry : mapData.entrySet()) {
+    
+            data[0][i] = entry.getKey() / 1000.0;
+            data[1][i] = entry.getValue();
+    
+            System.out.println(data[0][i] + "\t" + data[1][i]);
+            i++;
+        }
+    
+        set.addSeries(label, data);
     }
     
     /**
@@ -51,7 +130,7 @@ public class SimPlot extends JFrame {
      * @param offset Integer indicating offset from center
      */
 
-    public void centerComponent(Component c, int offset) {
+    private void centerComponent(Component c, int offset) {
 
         c.setLocation((d.width - c.getWidth()) / 2 - offset,
         (d.height - c.getHeight()) / 2 - offset);

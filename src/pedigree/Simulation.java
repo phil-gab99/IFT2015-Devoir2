@@ -27,8 +27,8 @@ public class Simulation {
     
     // Maps for plotting
     private static Map<Double, Integer> popGrowth;
-    private static Map<Sim, Integer> coalescenceF;
-    private static Map<Sim, Integer> coalescenceM;
+    private static Map<Double, Integer> coalescenceF;
+    private static Map<Double, Integer> coalescenceM;
     
     // Anonymous inner type for comparing Sims using their birth dates
     private static Comparator<Sim> comparator = new Comparator<Sim>() {
@@ -68,11 +68,47 @@ public class Simulation {
      */
     
     public static void setModelCustomParams(double deathRate,
-    double accidentRate, double loyaltyFactor, double avgLifetimeOffspring,
-    double ageScale) {
+        double accidentRate, double loyaltyFactor, double avgLifetimeOffspring,
+        double ageScale) {
         
         model = new AgeModel(deathRate, accidentRate, loyaltyFactor,
         avgLifetimeOffspring, ageScale);
+    }
+    
+    /**
+     * The method {@link #getPopGrowth()} retrieves the population growth
+     * associated with this simulation.
+     *
+     * @return The associated {@link Map}
+     */
+    
+    public static Map<Double, Integer> getPopGrowth() {
+        
+        return popGrowth;
+    }
+    
+    /**
+     * The method {@link #getCoalescenceF()} retrieves the female coalescence
+     * associated with this simulation.
+     *
+     * @return The associated {@link Map}
+     */
+    
+    public static Map<Double, Integer> getCoalescenceF() {
+        
+        return coalescenceF;
+    }
+    
+    /**
+     * The method {@link #getCoalescenceM()} retrieves the male coalescence
+     * associated with this simulation.
+     *
+     * @return The associated {@link Map}
+     */
+    
+    public static Map<Double, Integer> getCoalescenceM() {
+        
+        return coalescenceM;
     }
     
     /**
@@ -103,8 +139,8 @@ public class Simulation {
         rnd = new Random();
         
         popGrowth = new HashMap<Double, Integer>();
-        coalescenceM = new HashMap<Sim, Integer>();
-        coalescenceF = new HashMap<Sim, Integer>();
+        coalescenceF = new HashMap<Double, Integer>();
+        coalescenceM = new HashMap<Double, Integer>();
         
         generateFounders(n);
         
@@ -151,24 +187,26 @@ public class Simulation {
         ancestralFemaleLineage(foremothersQ);
         ancestralMaleLineage(forefathersQ);
         
-        for (Map.Entry<Double, Integer> entry : popGrowth.entrySet()) {
-        
-            System.out.println(entry.getKey() + "\t" + entry.getValue());
-        }
-        
-        System.out.println("_____________________________________________");
-        
-        for (Map.Entry<Sim, Integer> entry : coalescenceF.entrySet()) {
-        
-            System.out.println(entry.getKey().getBirthTime() + "\t" + entry.getValue());
-        }
-        
-        System.out.println("_____________________________________________");
-        
-        for (Map.Entry<Sim, Integer> entry : coalescenceM.entrySet()) {
-        
-            System.out.println(entry.getKey().getBirthTime() + "\t" + entry.getValue());
-        }
+        // // Might change this later to run in SimPlot
+        // 
+        // for (Map.Entry<Double, Integer> entry : popGrowth.entrySet()) {
+        // 
+        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
+        // }
+        // 
+        // System.out.println("_____________________________________________");
+        // 
+        // for (Map.Entry<Double, Integer> entry : coalescenceF.entrySet()) {
+        // 
+        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
+        // }
+        // 
+        // System.out.println("_____________________________________________");
+        // 
+        // for (Map.Entry<Double, Integer> entry : coalescenceM.entrySet()) {
+        // 
+        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
+        // }
     }
     
     /**
@@ -389,7 +427,7 @@ public class Simulation {
             
             if (females.contains(youngest.getMother())) {
                 
-                coalescenceF.put(youngest, females.size());
+                coalescenceF.put(youngest.getBirthTime(), females.size());
             } else {
                 
                 females.insert(youngest.getMother());
@@ -418,7 +456,7 @@ public class Simulation {
             
             if (males.contains(youngest.getFather())) {
                 
-                coalescenceM.put(youngest, males.size());
+                coalescenceM.put(youngest.getBirthTime(), males.size());
             } else {
                 
                 males.insert(youngest.getFather());
