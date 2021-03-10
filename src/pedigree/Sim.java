@@ -101,7 +101,7 @@ public class Sim implements Comparable<Sim> {
      * and gender or nothing if the given {@link Sim} is null
      */
     
-    private static String getIdentString(Sim sim) {
+    public static String getIdentString(Sim sim) {
         
         return sim == null ? "" : "sim." + sim.SIM_IDENT + "/" + sim.sex;
     }

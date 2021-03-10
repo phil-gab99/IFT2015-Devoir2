@@ -3,11 +3,10 @@ package pedigree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
@@ -23,15 +22,11 @@ public class Simulation {
     private static MinPQ<Event> eventQ;
     private static MinPQ<Sim> populationQ;
     private static List<Sim> populationList;
-    private static MinPQ<Sim> foremothersQ;
-    private static MinPQ<Sim> forefathersQ;
-    private static Set<Sim> foremothersSet;
-    private static Set<Sim> forefathersSet;
     private static double poissonPointProcess;
     private static Random rnd;
     
     // Maps for plotting
-    // private static Map<Double, Integer> popGrowth;
+    private static Map<Double, Integer> popGrowth;
     private static Map<Sim, Integer> coalescenceF;
     private static Map<Sim, Integer> coalescenceM;
     
@@ -61,7 +56,7 @@ public class Simulation {
      * The method
      * {@link #setModelCustomParams(double, double, double, int, double)}
      * allows to modify the parameters of the model according to the passed
-     * values
+     * values.
      *
      * @param deathRate The annual death rate
      * @param accidentRate The annual accident rate
@@ -92,6 +87,8 @@ public class Simulation {
     
     public static void simulate(int n, double tMax) {
         
+        int period = 0;
+        
         // Initilizing model with default values if not already initialized
         if (model == null) {
             
@@ -101,13 +98,11 @@ public class Simulation {
         eventQ = new MinPQ<Event>();
         populationQ = new MinPQ<Sim>();
         populationList = new ArrayList<Sim>();
-        foremothersQ = new HashSet<Sim>();
-        forefathersQ = new HashSet<Sim>();
         poissonPointProcess = model
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
         
-        // popGrowth = new HashMap<Double, Integer>();
+        popGrowth = new HashMap<Double, Integer>();
         coalescenceM = new HashMap<Sim, Integer>();
         coalescenceF = new HashMap<Sim, Integer>();
         
@@ -135,20 +130,45 @@ public class Simulation {
                 }
             } else {
                 
-                deathSim();
+                if (e instanceof Death) {
+                    
+                    deathSim();
+                }
+            }
+            
+            if ((e.getTime() / period) > 1) {
+                
+                popGrowth.put(e.getTime(), populationQ.size());
+                period += 100;
             }
         }
         
-        foremothersQ = new MinPQ<Sim>(comparator);
-        forefathersQ = new MinPQ<Sim>(comparator);
+        MinPQ<Sim> foremothersQ = new MinPQ<Sim>(comparator);
+        MinPQ<Sim> forefathersQ = new MinPQ<Sim>(comparator);
         
-        foremothersSet = new HashSet<Sim>();
-        forefathersSet = new HashSet<Sim>();
+        dividePop(foremothersQ, forefathersQ);
         
-        dividePop();
+        ancestralFemaleLineage(foremothersQ);
+        ancestralMaleLineage(forefathersQ);
         
-        ancestralFemaleLineage();
-        ancestralMaleLineage();
+        for (Map.Entry<Double, Integer> entry : popGrowth.entrySet()) {
+        
+            System.out.println(entry.getKey() + "\t" + entry.getValue());
+        }
+        
+        System.out.println("_____________________________________________");
+        
+        for (Map.Entry<Sim, Integer> entry : coalescenceF.entrySet()) {
+        
+            System.out.println(entry.getKey().getBirthTime() + "\t" + entry.getValue());
+        }
+        
+        System.out.println("_____________________________________________");
+        
+        for (Map.Entry<Sim, Integer> entry : coalescenceM.entrySet()) {
+        
+            System.out.println(entry.getKey().getBirthTime() + "\t" + entry.getValue());
+        }
     }
     
     /**
@@ -175,22 +195,24 @@ public class Simulation {
     
     private static void birthSim(Event e) {
         
+        Sim sim = e.getSubject();
+        
         // Setting the appropriate random death time
-        e.getSubject().setDeathTime(e.getTime() + model.randomAge(rnd));
+        sim.setDeathTime(e.getTime() + model.randomAge(rnd));
         
         // Add Death Event for this Sim
-        eventQ.insert(new Death(e.getSubject(), e.getSubject().getDeathTime()));
+        eventQ.insert(new Death(sim, sim.getDeathTime()));
         
         // If the Sim is a woman, add a Reproduction Event
-        if (e.getSubject().getSex().equals(Sim.Sex.F)) {
+        if (sim.getSex().equals(Sim.Sex.F)) {
             
-            eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
+            eventQ.insert(new Reproduction(sim, e.getTime() +
             AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
         }
         
         // Adding the newly born Sim to the population
-        populationQ.insert(e.getSubject());
-        populationList.add(e.getSubject());
+        populationQ.insert(sim);
+        populationList.add(sim);
     }
     
     /**
@@ -245,6 +267,8 @@ public class Simulation {
     
     private static void chooseFatherSim(Event e) {
         
+        List<Sim> nonCompatSims = new ArrayList<Sim>();
+        
         Sim mate;
         Sim mother = e.getSubject();
         
@@ -253,7 +277,7 @@ public class Simulation {
             
             if (Math.random() < 1 - model.getLoyaltyFactor()) {
                 
-                mate = getRandomMate(e);
+                mate = getRandomMate(e, nonCompatSims);
                 
                 mother.setMate(mate);
                 
@@ -266,7 +290,7 @@ public class Simulation {
             
             do {
                 
-                mate = getRandomMate(e);
+                mate = getRandomMate(e, nonCompatSims);
                 
                 if (mate != null) {
                     
@@ -283,8 +307,11 @@ public class Simulation {
                         }
                     }
                 }
-            } while (!mother.isInARelationship(e.getTime()) && !pop.isEmpty());
+            } while (!(mother.isInARelationship(e.getTime())
+            || populationList.isEmpty()));
         }
+        
+        populationList.addAll(nonCompatSims);
     }
     
     /**
@@ -293,11 +320,10 @@ public class Simulation {
      * {@link Event}.
      *
      * @param e The {@link Event} details
+     * @param badMatch {@link List} of incompatible {@link Sim}s
      */
     
-    private static Sim getRandomMate(Event e) {
-        
-        List<Sim> nonCompatSims = new ArrayList<Sim>();
+    private static Sim getRandomMate(Event e, List<Sim> badMatch) {
         
         Sim mate = null;
         
@@ -311,10 +337,8 @@ public class Simulation {
                 && potentialMate.isMatingAge(e.getTime())
                 && potentialMate.isAlive(e.getTime()) ? potentialMate : null;
                 
-            nonCompatSims.add(potentialMate);
+            badMatch.add(potentialMate);
         }
-        
-        populationList.addAll(nonCompatSims);
         
         return mate;
     }
@@ -322,9 +346,12 @@ public class Simulation {
     /**
      * The method {@link #dividePop()} divides the current population into male
      * and female subgroups.
+     *
+     * @param females The female {@link Sim} subgroup
+     * @param males The male {@link Sim} subgroup
      */
     
-    private static void dividePop() {
+    private static void dividePop(MinPQ<Sim> females, MinPQ<Sim> males) {
         
         while (!populationQ.isEmpty()) {
             
@@ -332,12 +359,10 @@ public class Simulation {
             
             if (sim.getSex().equals(Sim.Sex.F)) {
                 
-                foremothersQ.insert(sim);
-                foremothersSet.add(sim);
+                females.insert(sim);
             } else {
                 
-                forefathersQ.insert(sim);
-                forefathersSet.add(sim);
+                males.insert(sim);
             }
         }
     }
@@ -345,20 +370,59 @@ public class Simulation {
     /**
      * The method {@link #ancestralFemaleLineage()} defines female coalescences
      * after the simulation has been completed.
+     *
+     * @param females The female {@link Sim} subgroup
      */
     
-    private static void ancestralFemaleLineage() {
+    private static void ancestralFemaleLineage(MinPQ<Sim> females) {
         
-        Sim youngest = foremothersQ.delMin();
+        if (females.isEmpty()) {
+            
+            return;
+        }
+        
+        Sim youngest;
+        
+        // Iterating until population of founders or if only one mother remains
+        while (!((youngest = females.delMin()).isFounder())
+            && females.size() > 1) {
+            
+            if (females.contains(youngest.getMother())) {
+                
+                coalescenceF.put(youngest, females.size());
+            } else {
+                
+                females.insert(youngest.getMother());
+            }
+        }
     }
     
     /**
-     * The method {@link #ancestralFemaleLineage()} defines male coalescences
+     * The method {@link #ancestralMaleLineage()} defines male coalescences
      * after the simulation has been completed.
+     *
+     * @param males The male {@link Sim} subgroup
      */
     
-    private static void ancestralMaleLineage() {
+    private static void ancestralMaleLineage(MinPQ<Sim> males) {
         
-        Sim youngest = forefathersQ.delMin();
+        if (males.isEmpty()) {
+            
+            return;
+        }
+        
+        Sim youngest;
+        
+        // Iterating until population of founders or if only one father remains
+        while (!((youngest = males.delMin()).isFounder()) && males.size() > 1) {
+            
+            if (males.contains(youngest.getFather())) {
+                
+                coalescenceM.put(youngest, males.size());
+            } else {
+                
+                males.insert(youngest.getFather());
+            }
+        }
     }
 }

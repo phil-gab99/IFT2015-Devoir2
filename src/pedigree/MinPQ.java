@@ -159,6 +159,28 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
+     * The method {@link #contains(T)} determines whether the passed element is
+     * within the queue or not.
+     *
+     * @param e Element to search for
+     * @return {@code true} if the element is within the queue<li>{@code false}
+     * otherwise
+     */
+    
+    public boolean contains(T e) {
+        
+        for (Object o : pq) {
+            
+            if (e == o) {
+                
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
      * The method {@link #resize(int)} resizes the priority queue to the given
      * capacity.
      *
