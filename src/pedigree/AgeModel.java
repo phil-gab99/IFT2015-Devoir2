@@ -21,7 +21,8 @@ public class AgeModel {
     static final double DEFAULT_LOYALTY_FACTOR = 0.9;
     static final double DEFAULT_AVG_LIFETIME_OFFSPRING = 2.0;
     
-    static final double DEFAULT_SCALE = 100.0; // "maximum" age [with death rate 1]
+    // "maximum" age [with death rate 1]
+    static final double DEFAULT_SCALE = 100.0;
     
     private final double DEATH_RATE;
     private final double ACCIDENT_RATE;

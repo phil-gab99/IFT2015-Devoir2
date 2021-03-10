@@ -32,8 +32,8 @@ public class MinPQ<T extends Comparable<T>> {
     
     public MinPQ(int capacity) {
         
-        n = 0;
         pq = new Object[capacity];
+        n = 0;
     }
     
     /**
@@ -56,8 +56,8 @@ public class MinPQ<T extends Comparable<T>> {
     
     public MinPQ(int capacity, Comparator<T> comparator) {
         
-        n = 0;
         pq = new Object[capacity];
+        n = 0;
         this.comparator = comparator;
     }
     

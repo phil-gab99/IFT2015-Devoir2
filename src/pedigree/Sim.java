@@ -261,8 +261,8 @@ public class Sim implements Comparable<Sim> {
             double age = time - birthtime;
             
             return Sex.F.equals(sex) ?
-                    age >= MIN_MATING_AGE_F && age <= MAX_MATING_AGE_F :
-                    age >= MIN_MATING_AGE_M && age <= MAX_MATING_AGE_M;
+                age >= MIN_MATING_AGE_F && age <= MAX_MATING_AGE_F :
+                age >= MIN_MATING_AGE_M && age <= MAX_MATING_AGE_M;
         }
         
         return false;

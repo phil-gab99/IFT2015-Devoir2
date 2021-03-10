@@ -138,9 +138,9 @@ public class Simulation {
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
         
-        popGrowth = new HashMap<Double, Integer>();
-        coalescenceF = new HashMap<Double, Integer>();
-        coalescenceM = new HashMap<Double, Integer>();
+        popGrowth = new TreeMap<Double, Integer>();
+        coalescenceF = new TreeMap<Double, Integer>();
+        coalescenceM = new TreeMap<Double, Integer>();
         
         generateFounders(n);
         
@@ -186,27 +186,6 @@ public class Simulation {
         
         ancestralFemaleLineage(foremothersQ);
         ancestralMaleLineage(forefathersQ);
-        
-        // // Might change this later to run in SimPlot
-        // 
-        // for (Map.Entry<Double, Integer> entry : popGrowth.entrySet()) {
-        // 
-        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
-        // }
-        // 
-        // System.out.println("_____________________________________________");
-        // 
-        // for (Map.Entry<Double, Integer> entry : coalescenceF.entrySet()) {
-        // 
-        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
-        // }
-        // 
-        // System.out.println("_____________________________________________");
-        // 
-        // for (Map.Entry<Double, Integer> entry : coalescenceM.entrySet()) {
-        // 
-        //     System.out.println(entry.getKey() + "\t" + entry.getValue());
-        // }
     }
     
     /**
@@ -272,27 +251,22 @@ public class Simulation {
     
     private static void reproductionSim(Event e) {
         
-        if (e.getSubject().isAlive(e.getTime())) {
+        // If the female Sim is of mating age
+        if (e.getSubject().isMatingAge(e.getTime())) {
             
-            // If the female Sim is of mating age
-            if (e.getSubject().isMatingAge(e.getTime())) {
+            // Choose father for the newborn child
+            chooseFatherSim(e);
+            
+            // Birth of their child
+            if (e.getSubject().isInARelationship(e.getTime())) {
                 
-                // Choose father for the newborn child
-                chooseFatherSim(e);
-                
-                // Birth of their baby
-                if (e.getSubject().isInARelationship(e.getTime())) {
-                    
-                    eventQ.insert(new Birth(new Sim(e.getSubject(),
-                    e.getSubject().getMate(), e.getTime()), e.getTime()));
-                }
+                eventQ.insert(new Birth(new Sim(e.getSubject(),
+                e.getSubject().getMate(), e.getTime()), e.getTime()));
             }
-            
-            eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
-            AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
         }
         
-        // If Sim is dead, do nothing
+        eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
+        AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
     }
     
     /**
@@ -349,6 +323,7 @@ public class Simulation {
             || populationList.isEmpty()));
         }
         
+        // Restoring population List to its original state
         populationList.addAll(nonCompatSims);
     }
     

@@ -1,36 +1,28 @@
 package pedigree;
 
 import java.util.Map;
-import java.util.Arrays;
 
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
-
 import javax.swing.WindowConstants;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
 
-import org.jfree.chart.plot.PlotOrientation;
-
+import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
 
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.DefaultXYDataset;
-
-import org.jfree.chart.axis.StandardTickUnitSource;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-
-import org.jfree.chart.axis.LogAxis;
 
 public class SimPlot {
     
@@ -41,12 +33,57 @@ public class SimPlot {
     private static final Toolkit screen = Toolkit.getDefaultToolkit();
     private static final Dimension d = screen.getScreenSize();
     
+    //Input fields
+    private JTextField numFounders;
+    private JTextField simulationTime;
+    
+    /**
+     * The constructor method {@link #SimPlot(String, String)} initiates the
+     * simulation with the given parameters and charts the data.
+     *
+     * @param founders Number of founding {@link Sim}s
+     * @param maxTime Time length of simulation
+     */
+    
     public SimPlot(String founders, String maxTime) {
         
-        JTextField numFounders = new JTextField(founders);
-        JTextField simulationTime = new JTextField(maxTime);
+        setSimulationParams(founders, maxTime);
+        
+        Simulation.simulate(Integer.parseInt(numFounders.getText()),
+        Double.parseDouble(simulationTime.getText()));
+        
+        DefaultXYDataset SimData = new DefaultXYDataset();
+        createDataset(SimData, "Population Size", Simulation.getPopGrowth());
+        createDataset(SimData, "Foremothers", Simulation.getCoalescenceF());
+        createDataset(SimData, "Forefathers", Simulation.getCoalescenceM());
+        
+        XYPlot plot = new XYPlot(SimData, new NumberAxis("Time (1000 years)"), new LogAxis("Number of Sims"), new XYLineAndShapeRenderer());
+        
+        JFreeChart chart = new JFreeChart("Common Ancestors", JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+        
+        ChartFrame frame = new ChartFrame("Common Ancestors", chart);
+        
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        centerComponent(frame, 0);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+    
+    /**
+     * The method {@link #setSimulationParams(String, String)} retrieves the
+     * user-inputted values detailing the simulation procedure.
+     *
+     * @param founders Number of founding {@link Sim}s
+     * @param maxTime Time length of simulation
+     */
+    
+    private void setSimulationParams(String founders, String maxTime) {
+        
+        numFounders = new JTextField(founders);
+        simulationTime = new JTextField(maxTime);
         
         Object[] message = {
+            
             "Founders: ", numFounders,
             "Time of simulation: ", simulationTime
         };
@@ -82,26 +119,17 @@ public class SimPlot {
                 System.exit(0);
             }
         } while (!validArguments);
-        
-        Simulation.simulate(Integer.parseInt(numFounders.getText()),
-        Double.parseDouble(simulationTime.getText()));
-        
-        DefaultXYDataset SimData = new DefaultXYDataset();
-        createDataset(SimData, "Population Size", Simulation.getPopGrowth());
-        createDataset(SimData, "Foremothers", Simulation.getCoalescenceF());
-        createDataset(SimData, "Forefathers", Simulation.getCoalescenceM());
-        
-        XYPlot plot = new XYPlot(SimData, new NumberAxis("Time (1000 years)"), new LogAxis("Number of Sims"), new XYLineAndShapeRenderer());
-        
-        JFreeChart chart = new JFreeChart("Common Ancestors", JFreeChart.DEFAULT_TITLE_FONT, plot, true);
-        
-        ChartFrame frame = new ChartFrame("Common Ancestors", chart);
-        
-        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        centerComponent(frame, 0);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
+    
+    /**
+     * The method {@link #createDataset(DefaultXYDataset, String, Map)}
+     * generates the dataset to plot.
+     *
+     * @param set {@link #DefaultXYDataset} which will hold the dataset of
+     * interest
+     * @param label Associated label with a set
+     * @param mapData {@link Map} holding the pair of values to plot
+     */
     
     private void createDataset(DefaultXYDataset set, String label,  
         Map<Double, Integer> mapData) {
