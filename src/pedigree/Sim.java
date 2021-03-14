@@ -31,9 +31,8 @@ public class Sim implements Comparable<Sim> {
     private Sex sex; // Current Sim's gender
     
     /**
-     * The constructor method {@link #Sim(Sim, Sim, double, Sex)} initializes a
-     * new {@link Sim} with given mother and father {@link Sim}s as well as
-     * their birth date and gender.
+     * Initializes a new {@link Sim} with given mother and father {@link Sim}s
+     * as well as their birth date and gender.
      * 
      * @param mother The {@link Sim}'s mother
      * @param father The {@link Sim}'s father
@@ -55,9 +54,8 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The constructor method {@link #Sim(Sim, Sim, double)} initializes a new
-     * {@link Sim} with given mother and father {@link Sim}s as well as
-     * their birth date and a random gender.
+     * Initializes a new {@link Sim} with given mother and father {@link Sim}s
+     * as well as their birth date and a random gender.
      * 
      * @param mother The {@link Sim}'s mother
      * @param father The {@link Sim}'s father
@@ -70,31 +68,29 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The constructor method {@link #Sim(Sex)} initializes a founder
-     * {@link Sim} with a given gender.
+     * Initializes a founder {@link Sim} with a given gender.
      *
      * @param sex The {@link Sim}'s gender
      */
-    public Sim(Sex sex) {
+    
+    protected Sim(Sex sex) {
         
         this(null, null, 0.0, sex);
     }
     
     /**
-     * The constructor method {@link #Sim()} initializes a founder {@link Sim}
-     * with by randomly selecting a gender.
+     * Initializes a founder {@link Sim} with a randomly selected gender.
      *
      * @param sex The {@link Sim}'s gender
      */
     
-    public Sim() {
+    protected Sim() {
         
         this(Math.random() < 0.5 ? Sex.M : Sex.F);
     }
     
     /**
-     * The getter method {@link #getIdentString(Sim)} retrieves the given
-     * {@link Sim}'s identity.
+     * Retrieves the given {@link Sim}'s identity.
      * 
      * @param sim {@link Sim} of interest
      * @return The given {@link Sim}'s String implementation of their identity
@@ -107,8 +103,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getMother()} retrieves the current
-     * {@link Sim}'s mother.
+     * Retrieves the current {@link Sim}'s mother.
      *
      * @return The current {@link Sim}'s mother or null for a founder
      */
@@ -119,8 +114,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getFather()} retrieves the current
-     * {@link Sim}'s father.
+     * Retrieves the current {@link Sim}'s father.
      *
      * @return The current {@link Sim}'s father or null for a founder
      */
@@ -131,8 +125,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getMate()} retrieves the current {@link Sim}'s
-     * mating partner.
+     * Retrieves the current {@link Sim}'s mating partner.
      * 
      * @return The current {@link Sim}'s mate
      */
@@ -143,8 +136,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The setter method {@link #setMate()} sets the current's {@link Sim}'s 
-     * mating partner.
+     * Sets the current's {@link Sim}'s mating partner.
      *
      * @param mate The mating partner to assign to this {@link Sim}
      */
@@ -155,8 +147,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getBirthTime()} retrieves the current
-     * {@link Sim}'s birth date.
+     * Retrieves the current {@link Sim}'s birth date.
      * 
      * @return The current {@link Sim}'s birth time
      */
@@ -167,8 +158,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getDeathTime()} retrieves the current
-     * {@link Sim}'s death date.
+     * Retrieves the current {@link Sim}'s death date.
      * 
      * @return The current {@link Sim}'s death time
      */
@@ -179,8 +169,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The setter method {@link #setDeathTime(double)} sets the current's
-     * {@link Sim}'s death date.
+     * Sets the current's {@link Sim}'s death date.
      *
      * @param deathtime Death date to set for the current {@link Sim}
      */
@@ -191,8 +180,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The getter method {@link #getSex()} retrieves the current {@link Sim}'s
-     * gender.
+     * Retrieves the current {@link Sim}'s gender.
      * 
      * @return The current {@link Sim}'s sex
      */
@@ -203,12 +191,11 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The method {@link #isAlive()} checks if the current {@link Sim} is
-     * alive at the given time or not.
+     * Checks if the current {@link Sim} is alive at the given time.
      *
-     * @param time Time at which to make the comparison
-     * @return {@code true} if the current {@link Sim} is alive<li>
-     * {@code false} otherwise</li>
+     * @param time Time at which to undertake the check
+     * @return <ul><li>{@code true} if the current {@link Sim} is alive</li>
+     * <li>{@code false} otherwise</li></ul>
      */
     
     public boolean isAlive(double time) {
@@ -217,11 +204,10 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The method {@link #isFounder()} checks if the current {@link Sim} is a
-     * founder or not.
+     * Determines whether the current {@link Sim} is a founder or not.
      * 
-     * @return {@code true} if the current {@link Sim} is a founder<li>
-     * {@code false} otherwise</li>
+     * @return <ul><li>{@code true} if the current {@link Sim} is a founder
+     * </li><li>{@code false} otherwise</li></ul>
      */
     
     public boolean isFounder() {
@@ -230,12 +216,12 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The method {@link #isInARelationship(double)} checks whether the current
-     * {@link Sim} has a faithful and alive mating partner at the given time.
+     * Checks if the current {@link Sim} has a faithful and alive mating
+     * partner at the given time.
      * 
-     * @param time Time at which the test is to be undertaken
-     * @return {@code true} if the current {@link Sim} has a mating partner<li>
-     * {@code false} otherwise</li>
+     * @param time Time at which to undertake the check
+     * @return <ul><li>{@code true} if the current {@link Sim} has a mating
+     * partner</li><li>{@code false} otherwise</li></ul>
      */
      
     public boolean isInARelationship(double time) {
@@ -246,12 +232,13 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The method {@link #isMatingAge(time)} checks whether the current
-     * {@link Sim} is of mating age at the given time.
+     * Determines whether the current {@link Sim} is of mating age at the given
+     * time or not.
      * 
-     * @param time Time at which the comparison is to be undertaken
-     * @return {@code true} if the current {@link Sim} is alive and his age is
-     * within the mating age boundaries<li>{@code false} otherwise</li>
+     * @param time Time at which to undertake the check
+     * @return <ul><li>{@code true} if the current {@link Sim} is alive and his
+     * age is within the mating age boundaries</li><li>{@code false} otherwise
+     * </li></ul>
      */
     
     public boolean isMatingAge(double time) {
@@ -269,15 +256,14 @@ public class Sim implements Comparable<Sim> {
     }
     
     /** 
-     * The method {@link #compareTo(Sim)} defines {@link Sim} ordering by
-     * {@link Sim}'s death date.
+     * Defines {@link Sim} ordering by {@link Sim}'s death date.
      * 
      * @param s Other {@link Sim} with which to compare to
-     * @return The value 0 if the current instance and the other {@link Sim}
-     * have equal death dates<li>A value less than 0 if the current
-     * instance's death date is less than that of the other {@link Sim}</li>
-     * <li>A value greater than 0 if the current instance's death date is
-     * greater than that of the other {@link Sim}</li>
+     * @return <ul><li>The value 0 if the current {@link Sim} and the other
+     * {@link Sim} have equal death dates</li><li>A value less than 0 if the
+     * current {@link Sim}'s death date is before that of the other {@link Sim}
+     * </li><li>A value greater than 0 if the current {@link Sim}'s death date
+     * after that of the other {@link Sim}</li></ul>
      * @see java.lang.Comparable
      * @see java.lang.Double
      */
@@ -288,8 +274,7 @@ public class Sim implements Comparable<Sim> {
     }
     
     /**
-     * The method {@link #toString()} defines the string implementation of a
-     * {@link Sim}.
+     * Defines the string implementation of a {@link Sim}.
      * 
      * @return String implementation of {@link Sim}
      * @see java.lang.Object

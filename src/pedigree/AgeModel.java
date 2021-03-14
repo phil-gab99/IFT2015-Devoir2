@@ -31,9 +31,7 @@ public class AgeModel {
     private final double AGE_FACTOR;
     
     /**
-     * The constructor method
-     * {@link #AgeModel(double, double, double, int, double)} assigns the
-     * different rates and factors to the model.
+     * Initializes the model with the given rates and factors.
      *
      * @param deathRate The annual death rate
      * @param accidentRate The annual accident rate
@@ -55,8 +53,7 @@ public class AgeModel {
     }
     
     /**
-     * The constructor method {@link #AgeModel()} instantiates a model with the
-     * default human values.
+     * Initializes a model with the default human values.
      */
     
     public AgeModel() {
@@ -66,9 +63,8 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #expectedParenthoodSpan(double, double)} calculates
-     * the expected time span (TS) for mating: average number of children will
-     * be TS/mating rate.
+     * Calculates the expected time span (TS) for mating: average number of
+     * children will be TS/mating rate.
      * 
      * @param minAge Minimum age of sexual maturity
      * @param maxAge Maximum age of parenting
@@ -122,8 +118,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #getSurvival(double)} determines the probability of
-     * surviving past the given age.
+     * Determines the probability of surviving past the given age.
      * 
      * @param age Age with which probability is calculated
      * @return Probability of dying after the given age
@@ -136,8 +131,8 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #getPoissonPointProcess(double, double)} calculates
-     * the Poisson Point Process from the given age interval of maturity.
+     * Calculates the Poisson Point Process from the given age interval of
+     * maturity.
      * 
      * @param minAge Minimum age of sexual maturity
      * @param maxAge Maximum age of parenting
@@ -150,8 +145,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #getLoyaltyFactor()} retrieves the loyalty factor
-     * associated with this model.
+     * Retrieves the loyalty factor associated with this model.
      *
      * @return The loyalty factor associated with this model
      */
@@ -162,8 +156,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #ramdomAge(Random)} generates a random value with the
-     * specified lifespan distribution.
+     * Generates a random value with the specified lifespan distribution.
      * 
      * @param rnd Pseudorandom number generator for uniform[0,1]
      * @return a random value distributed by Gomperz-Makeham
@@ -182,8 +175,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #randomWaitingTime(Random, double)} generates an
-     * exponentially distributed random variable.
+     * Generates an exponentially distributed random variable.
      * 
      * @param rnd Random number generator
      * @param rate Inverse of the mean
@@ -196,8 +188,7 @@ public class AgeModel {
     }
     
     /**
-     * The method {@link #toString()} defines the string implementation of an
-     * {@link AgeModel}.
+     * Defines the string implementation of an {@link AgeModel}.
      * 
      * @return String implementation of {@link AgeModel}
      * @see java.lang.Object

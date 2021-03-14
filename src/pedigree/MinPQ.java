@@ -17,68 +17,40 @@ import java.util.NoSuchElementException;
 
 public class MinPQ<T extends Comparable<T>> {
     
-    static final int DEFAULT_CAPACITY = 10;
+    static final int DEFAULT_CAPACITY = 1;
     
     private Object[] pq;
     private int n;
     private Comparator<T> comparator;
     
     /**
-     * The constructor method {@link #MinPQ(int)} initializes the priority
-     * queue with a starting given capacity.
+     * Initializes the priority queue with default capacity using given
+     * comparator.
      *
-     * @param capacity Starting capacity of priority queue
+     * @param comparator Natural given order of elements
      */
     
-    public MinPQ(int capacity) {
+    public MinPQ(Comparator<T> comparator) {
         
-        pq = new Object[capacity];
-        n = 0;
-    }
-    
-    /**
-     * The constructor method {@link #MinPQ()} initializes the priority queue
-     * with default capacity.
-     */
-    
-    public MinPQ() {
-        
-        this(DEFAULT_CAPACITY);
-    }
-    
-    /**
-     * The constructor method {@link #MinPQ(int, Comparator)} initializes the
-     * priority queue with the given capacity using the given comparator.
-     *
-     * @param capacity Initial capacity of this priority queue
-     * @param comparator Order in which to compare the elements
-     */
-    
-    public MinPQ(int capacity, Comparator<T> comparator) {
-        
-        pq = new Object[capacity];
+        pq = new Object[DEFAULT_CAPACITY];
         n = 0;
         this.comparator = comparator;
     }
     
     /**
-     * The constructor method {@link #MinPQ(int, Comparator)} initializes the
-     * priority queue with the default capacity using the given comparator.
-     *
-     * @param comparator Order in which to compare the elements
+     * Initializes the priority queue with default capacity and no comparator.
      */
     
-    public MinPQ(Comparator<T> comparator) {
+    public MinPQ() {
         
-        this(DEFAULT_CAPACITY, comparator);
+        this(null);
     }
     
     /**
-     * The method {@link #isEmpty()} indicates whether the priority queue is
-     * empty or not.
+     * Indicates whether the priority queue is empty or not.
      * 
-     * @return {@code true} if this priority queue is empty<li>{@code false}
-     * otherwise</li>
+     * @return <ul><li>{@code true} if this priority queue is empty</li><li>
+     * {@code false} otherwise</li></ul>
      */
     
     public boolean isEmpty() {
@@ -87,10 +59,9 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #insert(T)} adds a new {@link T} type object to the
-     * priority queue.
+     * Adds a new {@link T} type object to the priority queue.
      *
-     * @param v {@link T} type to add onto priority queue
+     * @param v Element to add onto priority queue
      */
     
     public void insert(T v) {
@@ -106,7 +77,7 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #size()} retrieves the size of the priority queue.
+     * Retrieves the size of the priority queue.
      * 
      * @return The number of elements in the priority queue
      */
@@ -117,8 +88,7 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #delMin()} retrieves and removes the highest priority
-     * element of this priority queue.
+     * Retrieves and removes the minimum element of this priority queue.
      *
      * @return The highest priority element of this priority queue
      * @throws NoSuchElementException if priority queue is empty
@@ -141,8 +111,7 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #peek()} retrieves the minimum element of the priority
-     * queue.
+     * Retrieves the minimum element of the priority queue.
      *
      * @return The highest priority element of this priority queue
      * @throws NoSuchElementException if priority queue is empty
@@ -159,12 +128,11 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #contains(T)} determines whether the passed element is
-     * within the queue or not.
+     * Determines whether the passed element is within the queue or not.
      *
      * @param e Element to search for
-     * @return {@code true} if the element is within the queue<li>{@code false}
-     * otherwise
+     * @return <ul><li>{@code true} if the element is within the queue</li><li>
+     * {@code false} otherwise
      */
     
     public boolean contains(T e) {
@@ -181,8 +149,7 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #resize(int)} resizes the priority queue to the given
-     * capacity.
+     * Resizes the priority queue to the given capacity.
      *
      * @param capacity New capacity of the priority queue
      */
@@ -200,8 +167,8 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The helper method {@link #swim(int)} correctly positions an element
-     * up through the binary heap structure to preserve the min-heap property.
+     * Correctly positions an element up through the binary heap structure to
+     * preserve the min-heap property.
      *
      * @param i Index of the {@link Event} to position
      */
@@ -216,8 +183,8 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The helper method {@link #sink(int)} correctly positions an element
-     * down through the binary heap to preserve the min-heap property.
+     * Correctly positions an element down through the binary heap structure to
+     * preserve the min-heap property.
      *
      * @param i Index of the element to position
      */
@@ -245,14 +212,14 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The helper method {@link #greater(int, int)} compares two elements at
-     * the given indeces and determines whether the first is greater than the
-     * second.
+     * Compares two elements at the given indeces and determines whether the
+     * first is greater than the second.
      *
      * @param i Index of first {@link Event}
      * @param j Index of second {@link Event}
-     * @return {@code true} if the element at index {@code i} is greater than
-     * the element at index {@code j}<li>{@code false} otherwise</li>
+     * @return <ul><li>{@code true} if the element at index {@code i} is
+     * greater than the element at index {@code j}</li><li>{@code false}
+     * otherwise</li></ul>
      * @see java.lang.Comparable
      */
     
@@ -268,8 +235,8 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The helper method {@link #swap(int, int)} positionnally swaps two
-     * elements in the priority queue at the given indeces.
+     * Positionnally swaps two elements in the priority queue at the given
+     * indeces.
      *
      * @param i Index of first element
      * @param j Index of second element
@@ -283,10 +250,10 @@ public class MinPQ<T extends Comparable<T>> {
     }
     
     /**
-     * The method {@link #pq(int)} returns an element of type T of the priority
+     * Accessor method which retrieves an element of type T in the priority
      * queue at a given index. Note that unchecked warnings are suppressed
-     * since generics check for type errors at compile-time and lack the
-     * information at runtime.
+     * to allow this procedure since generics check for type errors at
+     * compile-time and lack the information at runtime.
      *
      * @param index Index at which element of interest is
      * @return The element of type T at the given index

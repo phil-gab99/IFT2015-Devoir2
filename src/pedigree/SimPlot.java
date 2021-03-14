@@ -38,8 +38,7 @@ public class SimPlot {
     private JTextField simulationTime;
     
     /**
-     * The constructor method {@link #SimPlot(String, String)} initiates the
-     * simulation with the given parameters and charts the data.
+     * Initiates the simulation with the given parameters and charts the data.
      *
      * @param founders Number of founding {@link Sim}s
      * @param maxTime Time length of simulation
@@ -49,17 +48,29 @@ public class SimPlot {
         
         setSimulationParams(founders, maxTime);
         
+        // Starting simulation
         Simulation.simulate(Integer.parseInt(numFounders.getText()),
         Double.parseDouble(simulationTime.getText()));
         
+        // Building the different datasets
         DefaultXYDataset SimData = new DefaultXYDataset();
         createDataset(SimData, "Population Size", Simulation.getPopGrowth());
         createDataset(SimData, "Foremothers", Simulation.getCoalescenceF());
         createDataset(SimData, "Forefathers", Simulation.getCoalescenceM());
         
-        XYPlot plot = new XYPlot(SimData, new NumberAxis("Time (1000 years)"), new LogAxis("Number of Sims"), new XYLineAndShapeRenderer());
+        XYPlot plot = new XYPlot(
+            SimData,
+            new NumberAxis("Time (1000 years)"),
+            new LogAxis("Number of Sims"),
+            new XYLineAndShapeRenderer()
+        );
         
-        JFreeChart chart = new JFreeChart("Common Ancestors", JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+        JFreeChart chart = new JFreeChart(
+            "Common Ancestors",
+            JFreeChart.DEFAULT_TITLE_FONT,
+            plot,
+            true
+        );
         
         ChartFrame frame = new ChartFrame("Common Ancestors", chart);
         
@@ -70,8 +81,7 @@ public class SimPlot {
     }
     
     /**
-     * The method {@link #setSimulationParams(String, String)} retrieves the
-     * user-inputted values detailing the simulation procedure.
+     * Retrieves the user-inputted values detailing the simulation procedure.
      *
      * @param founders Number of founding {@link Sim}s
      * @param maxTime Time length of simulation
@@ -92,10 +102,14 @@ public class SimPlot {
         
         do {
             
-            int option = JOptionPane.showConfirmDialog(null, message,
-            "Arguments", JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog(
+                null,
+                message,
+                "Arguments",
+                JOptionPane.OK_CANCEL_OPTION
+            );
             
-            if (option == JOptionPane.OK_OPTION) {
+            if (option == JOptionPane.OK_OPTION) { // User pressed Ok button
                 
                 try {
                     
@@ -105,16 +119,23 @@ public class SimPlot {
                         validArguments = true;
                     } else {
                         
-                        JOptionPane.showMessageDialog(null,
-                        "For negative input", "Wrong argument type",
-                        JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "For negative input",
+                            "Wrong argument type",
+                            JOptionPane.ERROR_MESSAGE
+                        );
                     }
                 } catch(NumberFormatException e) {
                     
-                    JOptionPane.showMessageDialog(null, e.getMessage(),
-                    "Wrong argument type", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                        null,
+                        e.getMessage(),
+                        "Wrong argument type",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
-            } else {
+            } else {                               // User cancelled operation
                 
                 System.exit(0);
             }
@@ -122,13 +143,13 @@ public class SimPlot {
     }
     
     /**
-     * The method {@link #createDataset(DefaultXYDataset, String, Map)}
-     * generates the dataset to plot.
+     * Adds series of value pairs to the given dataset and prints the data in
+     * standard out.
      *
      * @param set {@link #DefaultXYDataset} which will hold the dataset of
      * interest
-     * @param label Associated label with a set
-     * @param mapData {@link Map} holding the pair of values to plot
+     * @param label Associated label with a series
+     * @param mapData {@link Map} holding the series of value pairs to plot
      */
     
     private void createDataset(DefaultXYDataset set, String label,  
@@ -136,7 +157,8 @@ public class SimPlot {
     
         int i = 0;
         double[][] data = new double[2][mapData.size()];
-        System.out.println("_____________________________________________");
+        
+        System.out.println(label);
     
         for (Map.Entry<Double, Integer> entry : mapData.entrySet()) {
     
@@ -147,12 +169,14 @@ public class SimPlot {
             i++;
         }
     
+        System.out.println("________________________________________________");
+    
         set.addSeries(label, data);
     }
     
     /**
-     * The method {@link #centerComponent(Component, int)} centers a given
-     * component with a given offset with respect to the screen dimensions.
+     * Centers a given component with a given offset with respect to the screen
+     * dimensions.
      *
      * @param c Component to be centered
      * @param offset Integer indicating offset from center

@@ -41,43 +41,7 @@ public class Simulation {
     };
     
     /**
-     * The method {@link #getModel()} retrieves the associated model with the
-     * simulation.
-     *
-     * @return The associated model
-     */
-    
-    public static AgeModel getModel() {
-        
-        return model;
-    }
-    
-    /**
-     * The method
-     * {@link #setModelCustomParams(double, double, double, int, double)}
-     * allows to modify the parameters of the model according to the passed
-     * values.
-     *
-     * @param deathRate The annual death rate
-     * @param accidentRate The annual accident rate
-     * @param loyaltyFactor The loyalty factor which determines how loyal a
-     * {@link Sim} partner is to their mate
-     * @param avgLifetimeOffspring The average number of children a mother
-     * {@link Sim} will have in her lifetime
-     * @param ageScale Maximum age with death rate 1
-     */
-    
-    public static void setModelCustomParams(double deathRate,
-        double accidentRate, double loyaltyFactor, double avgLifetimeOffspring,
-        double ageScale) {
-        
-        model = new AgeModel(deathRate, accidentRate, loyaltyFactor,
-        avgLifetimeOffspring, ageScale);
-    }
-    
-    /**
-     * The method {@link #getPopGrowth()} retrieves the population growth
-     * associated with this simulation.
+     * Retrieves the population growth associated with this simulation.
      *
      * @return The associated {@link Map}
      */
@@ -88,8 +52,7 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #getCoalescenceF()} retrieves the female coalescence
-     * associated with this simulation.
+     * Retrieves the female coalescence associated with this simulation.
      *
      * @return The associated {@link Map}
      */
@@ -100,8 +63,7 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #getCoalescenceM()} retrieves the male coalescence
-     * associated with this simulation.
+     * Retrieves the male coalescence associated with this simulation.
      *
      * @return The associated {@link Map}
      */
@@ -112,25 +74,21 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #simulate(int, double)} begins the simulation of
-     * {@link Event}s stemming from the {@link Birth} of a given amount of
-     * founder {@link Sim}s. The simulation ends after the given maximum time
-     * has been reached.
+     * Begins the simulation of {@link Event}s stemming from the {@link Birth}
+     * of a given amount of founder {@link Sim}s. The simulation ends after the
+     * given maximum time has been reached or if no more {@link Event}s remain
+     * to be applied.
      * 
      * @param n Number of founding {@link Sim}s
-     * @param tMax Time length of simulation
+     * @param tMax Maximum time length of simulation
      */
     
     public static void simulate(int n, double tMax) {
         
-        int period = 0;
-        
-        // Initilizing model with default values if not already initialized
-        if (model == null) {
-            
-            model = new AgeModel();
-        }
-        
+        int interval = 100; // Intervals at which population size is evaluated
+        int period = 0;     // Time period for sampling population size
+
+        model = new AgeModel();
         eventQ = new MinPQ<Event>();
         populationQ = new MinPQ<Sim>();
         populationList = new ArrayList<Sim>();
@@ -175,7 +133,7 @@ public class Simulation {
             if ((e.getTime() / period) > 1) {
                 
                 popGrowth.put(e.getTime(), populationQ.size());
-                period += 10;
+                period += interval;
             }
         }
         
@@ -189,8 +147,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #generateFounders(int)} initiates the simulation with
-     * the {@link Birth} of a given amount of founder {@link Sim}s.
+     * Initiates the simulation with the {@link Birth} of a given amount of
+     * founder {@link Sim}s.
      *
      * @param n Integer indicating number of founder {@link Sim}s
      */
@@ -204,8 +162,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #birthSim(Event)} completes the appropriate procedure
-     * for the {@link Birth} of a {@link Sim}.
+     * Completes the appropriate procedure for the {@link Birth} of a
+     * {@link Sim}.
      *
      * @param e The {@link Birth} {@link Event} details
      */
@@ -233,8 +191,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #deathSim()} completes the appropriate procedure for
-     * the {@link Death} of a {@link Sim}.
+     * Completes the appropriate procedure for the {@link Death} of a
+     * {@link Sim}.
      */
     
     private static void deathSim() {
@@ -243,8 +201,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #reproductionSim(Event)} completes the appropriate
-     * procedure for the {@link Reproduction} relating to a female {@link Sim}.
+     * Completes the appropriate procedure for the {@link Reproduction}
+     * relating to a female {@link Sim}.
      *
      * @param e The {@link Reproduction} {@link Event} details
      */
@@ -270,9 +228,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #chooseFatherSim(Event)} selects a male {@link Sim}
-     * with which the female {@link Sim} who is in the process of a
-     * {@link Reproduction} {@link Event} will mate with.
+     * Selects a male {@link Sim} with which the female {@link Sim} who is in
+     * the process of a {@link Reproduction} {@link Event} will mate with.
      *
      * @param e The {@link Reproduction} {@link Event} details
      */
@@ -328,9 +285,8 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #getRandomMate(Event)} selects a mating {@link Sim}
-     * from our population for the {@link Sim} associated with the given
-     * {@link Event}.
+     * Selects a mating {@link Sim} from the present population for the
+     * {@link Sim} associated with the given {@link Event}.
      *
      * @param e The {@link Event} details
      * @param badMatch {@link List} of incompatible {@link Sim}s
@@ -357,8 +313,7 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #dividePop()} divides the current population into male
-     * and female subgroups.
+     * Divides the current population into female and male subgroups.
      *
      * @param females The female {@link Sim} subgroup
      * @param males The male {@link Sim} subgroup
@@ -381,8 +336,7 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #ancestralFemaleLineage()} defines female coalescences
-     * after the simulation has been completed.
+     * Defines female coalescences after the simulation has been completed.
      *
      * @param females The female {@link Sim} subgroup
      */
@@ -411,8 +365,7 @@ public class Simulation {
     }
     
     /**
-     * The method {@link #ancestralMaleLineage()} defines male coalescences
-     * after the simulation has been completed.
+     * Defines male coalescences after the simulation has been completed.
      *
      * @param males The male {@link Sim} subgroup
      */

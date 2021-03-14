@@ -10,14 +10,13 @@ package pedigree;
 public class Main {
     
     /**
-     * The method {@link main(String[])} retrieves the user passed arguments
-     * necessary for launching the application.
+     * Retrieves the user passed arguments necessary for beginning the
+     * simulation.
      *
      * @param args <ul><li>args[0] is an {@code int} that holds the number of
      * founders for the simulation</li><li>args[1] is a {@code double} that
      * holds the maximum time of the simulation</li></ul>
-     * @throws IllegalArgumentException if less than or more than 2 arguments
-     * are passed
+     * @throws IllegalArgumentException if not exactly 2 arguments are passed
      */
     
     public static void main(String[] args) {
