@@ -22,8 +22,8 @@ to be born at year 0, and the second argument is a `double` indicating the
 if it hadn't already run out of events. Alternatively, the application can be
 run simply by double-clicking the jar file.
 
-In both cases, one will need to either confirm the entered arguments in the
-dialog before proceeding with the simulation.
+In both cases, one will need to confirm the entered arguments in the dialog
+before proceeding with the simulation.
 
 The data from the simulation is then listed in the terminal instance if the
 application was launched from the terminal and the data is plotted onto a graph
