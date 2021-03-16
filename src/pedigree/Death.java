@@ -4,7 +4,7 @@ package pedigree;
  * The class {@link Death} defines an {@link Event} which indicates the death
  * of a new {@link Sim}.
  * 
- * @version 1.0 2021-mm-dd
+ * @version 1.0 2021-03-28
  * @author Philippe Gabriel
  */
 

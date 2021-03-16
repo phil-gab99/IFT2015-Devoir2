@@ -26,6 +26,15 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.DefaultXYDataset;
 
+/**
+ * The class {@link SimPlot} manages the graphical interface elements for
+ * retrieving the user arguments to begin the simulation and displaying the
+ * data in the form of charts and in standard out.
+ *
+ * @version 1.9.12 2021-03-28
+ * @author Philippe Gabriel
+ */
+
 public class SimPlot {
     
     private static final int FRAME_WIDTH = 1440; //Default frame width

@@ -11,7 +11,7 @@ import java.util.Random;
  * The class {@link Simulation} runs a simulation of {@link Event}s and tracks
  * the population of {@link Sim}s following the events.
  * 
- * @version 1.0 2021-mm-dd
+ * @version 1.31.60 2021-03-28
  * @author Philippe Gabriel
  */
 
@@ -21,7 +21,7 @@ public class Simulation {
     private static MinPQ<Event> eventQ;
     private static MinPQ<Sim> populationQ;
     private static List<Sim> populationList;
-    private static double poissonPointProcess;
+    private static double poissonProc;
     private static Random rnd;
     
     // Maps for plotting
@@ -84,14 +84,14 @@ public class Simulation {
     
     public static void simulate(int n, double tMax) {
         
-        int interval = 100; // Intervals at which population size is evaluated
+        int interval = 100; // Time intervals at which population size sampled
         int period = 0;     // Time period for sampling population size
 
         model = new AgeModel();
         eventQ = new MinPQ<Event>();
         populationQ = new MinPQ<Sim>();
         populationList = new ArrayList<Sim>();
-        poissonPointProcess = model
+        poissonProc = model
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
         
@@ -182,7 +182,7 @@ public class Simulation {
         if (sim.getSex().equals(Sim.Sex.F)) {
             
             eventQ.insert(new Reproduction(sim, e.getTime() +
-            AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
+            AgeModel.randomWaitingTime(rnd, poissonProc)));
         }
         
         // Adding the newly born Sim to the population
@@ -224,7 +224,7 @@ public class Simulation {
         }
         
         eventQ.insert(new Reproduction(e.getSubject(), e.getTime() +
-        AgeModel.randomWaitingTime(rnd, poissonPointProcess)));
+        AgeModel.randomWaitingTime(rnd, poissonProc)));
     }
     
     /**

@@ -3,7 +3,7 @@ package pedigree;
 /**
  * The class {@link Main} initiates the application.
  *
- * @version 1.0 2021-mm-dd
+ * @version 1.0.5 2021-03-28
  * @author Philippe Gabriel
  */
 

@@ -1,9 +1,6 @@
 package pedigree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -11,7 +8,7 @@ import java.util.NoSuchElementException;
  * {@link Comparable} objects.
  * 
  * @param T The generic type of elements on this priority queue
- * @version 1.0 2021-mm-dd
+ * @version 1.11.27 2021-03-28
  * @author Philippe Gabriel
  */
 

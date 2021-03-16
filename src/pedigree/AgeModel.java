@@ -1,13 +1,12 @@
 package pedigree;
 
-import java.util.Arrays;
 import java.util.Random;
 
 /**
  * The class {@link AgeModel} models the lifespan of a {@link Sim} following a
  * Gompertz-Makeham distribution.
  * 
- * @version 1.0 2021-mm-dd
+ * @version 1.9.18 2021-03-28
  * @author Philippe Gabriel
  */
 

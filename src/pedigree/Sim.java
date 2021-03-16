@@ -4,7 +4,7 @@ package pedigree;
  * The class {@link Sim} defines a virtual individual along with methods to
  * access their information.
  * 
- * @version 1.0 2021-03-17
+ * @version 1.3.11 2021-03-28
  * @author Philippe Gabriel
  */
  
@@ -97,7 +97,7 @@ public class Sim implements Comparable<Sim> {
      * and gender or nothing if the given {@link Sim} is null
      */
     
-    public static String getIdentString(Sim sim) {
+    private static String getIdentString(Sim sim) {
         
         return sim == null ? "" : "sim." + sim.SIM_IDENT + "/" + sim.sex;
     }

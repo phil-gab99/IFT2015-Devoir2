@@ -4,7 +4,7 @@ package pedigree;
  * The abstract class {@link Event} defines the common attributes of any
  * {@link Event} type object.
  * 
- * @version 1.0 2021-mm-dd
+ * @version 1.1.5 2021-03-28
  * @author Philippe Gabriel
  */
 
