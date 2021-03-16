@@ -43,7 +43,7 @@ public class AgeModel {
      */
     
     public AgeModel(double deathRate, double accidentRate,
-    double loyaltyFactor, double avgLifetimeOffspring, double ageScale) {
+        double loyaltyFactor, double avgLifetimeOffspring, double ageScale) {
         
         DEATH_RATE = deathRate;
         ACCIDENT_RATE = accidentRate;

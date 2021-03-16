@@ -2,7 +2,6 @@ package pedigree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +95,7 @@ public class Simulation {
         .getPoissonPointProcess(Sim.MIN_MATING_AGE_F, Sim.MAX_MATING_AGE_F);
         rnd = new Random();
         
+        // Initiliazing TreeMaps to preserve natural ordering by keys
         popGrowth = new TreeMap<Double, Integer>();
         coalescenceF = new TreeMap<Double, Integer>();
         coalescenceM = new TreeMap<Double, Integer>();
@@ -142,8 +142,8 @@ public class Simulation {
         
         dividePop(foremothersQ, forefathersQ);
         
-        ancestralFemaleLineage(foremothersQ);
-        ancestralMaleLineage(forefathersQ);
+        ancestralLineage(foremothersQ, "getMother", coalescenceF);
+        ancestralLineage(forefathersQ, "getFather", coalescenceM);
     }
     
     /**
@@ -289,10 +289,10 @@ public class Simulation {
      * {@link Sim} associated with the given {@link Event}.
      *
      * @param e The {@link Event} details
-     * @param badMatch {@link List} of incompatible {@link Sim}s
+     * @param checkedSim {@link List} of checked {@link Sim}s
      */
     
-    private static Sim getRandomMate(Event e, List<Sim> badMatch) {
+    private static Sim getRandomMate(Event e, List<Sim> checkedSim) {
         
         Sim mate = null;
         
@@ -306,7 +306,7 @@ public class Simulation {
                 && potentialMate.isMatingAge(e.getTime())
                 && potentialMate.isAlive(e.getTime()) ? potentialMate : null;
                 
-            badMatch.add(potentialMate);
+            checkedSim.add(potentialMate); // For rebalancing population list
         }
         
         return mate;
@@ -336,58 +336,45 @@ public class Simulation {
     }
     
     /**
-     * Defines female coalescences after the simulation has been completed.
+     * Defines gender coalescence after the simulation has been completed.
      *
-     * @param females The female {@link Sim} subgroup
+     * @param subgroup The {@link Sim} gender subgroup
+     * @param parent Method name depending on the gender passed which can be
+     * either <ul><li>getMother for the female subgroup</li><li>getFather for
+     * the male subgroup</li></ul>
+     * @param coalescence The Map for holding the value pairs to plot
      */
     
-    private static void ancestralFemaleLineage(MinPQ<Sim> females) {
+    private static void ancestralLineage(MinPQ<Sim> subgroup, String parent,
+        Map<Double, Integer> coalescence) {
         
-        if (females.isEmpty()) {
+        if (subgroup.isEmpty()) {
             
             return;
         }
         
         Sim youngest;
         
-        // Iterating until population of founders or if only one mother remains
-        while (!((youngest = females.delMin()).isFounder())
-            && females.size() > 1) {
+        while (!((youngest = subgroup.delMin()).isFounder())
+            && subgroup.size() > 1) {
             
-            if (females.contains(youngest.getMother())) {
+            Sim parentSim = null;
+            
+            try {
                 
-                coalescenceF.put(youngest.getBirthTime(), females.size());
-            } else {
+                parentSim = (Sim)youngest.getClass().getDeclaredMethod(parent)
+                .invoke(youngest, new Object[0]);
+            } catch(Exception e) {
                 
-                females.insert(youngest.getMother());
+                e.printStackTrace();
             }
-        }
-    }
-    
-    /**
-     * Defines male coalescences after the simulation has been completed.
-     *
-     * @param males The male {@link Sim} subgroup
-     */
-    
-    private static void ancestralMaleLineage(MinPQ<Sim> males) {
-        
-        if (males.isEmpty()) {
             
-            return;
-        }
-        
-        Sim youngest;
-        
-        // Iterating until population of founders or if only one father remains
-        while (!((youngest = males.delMin()).isFounder()) && males.size() > 1) {
-            
-            if (males.contains(youngest.getFather())) {
+            if (subgroup.contains(parentSim)) {
                 
-                coalescenceM.put(youngest.getBirthTime(), males.size());
+                coalescence.put(youngest.getBirthTime(), subgroup.size());
             } else {
                 
-                males.insert(youngest.getFather());
+                subgroup.insert(parentSim);
             }
         }
     }

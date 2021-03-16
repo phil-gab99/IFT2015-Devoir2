@@ -1,10 +1,12 @@
 package pedigree;
 
-import java.util.Map;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+
+import java.text.DecimalFormat;
+
+import java.util.Map;
 
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
@@ -26,8 +28,8 @@ import org.jfree.data.xy.DefaultXYDataset;
 
 public class SimPlot {
     
-    private static final int FRAME_WIDTH = 800;  //Default frame width
-    private static final int FRAME_HEIGHT = 450; //Default frame height
+    private static final int FRAME_WIDTH = 1440; //Default frame width
+    private static final int FRAME_HEIGHT = 900; //Default frame height
     
     //Acquiring screen details and dimensions
     private static final Toolkit screen = Toolkit.getDefaultToolkit();
@@ -155,17 +157,18 @@ public class SimPlot {
     private void createDataset(DefaultXYDataset set, String label,  
         Map<Double, Integer> mapData) {
     
-        int i = 0;
-        double[][] data = new double[2][mapData.size()];
-        
         System.out.println(label);
+    
+        DecimalFormat dFormat = new DecimalFormat("0.000000");
+        double[][] data = new double[2][mapData.size()];
+        int i = 0;
     
         for (Map.Entry<Double, Integer> entry : mapData.entrySet()) {
     
             data[0][i] = entry.getKey() / 1000.0;
             data[1][i] = entry.getValue();
     
-            System.out.println(data[0][i] + "\t" + data[1][i]);
+            System.out.println(dFormat.format(data[0][i]) + "\t" + data[1][i]);
             i++;
         }
     
