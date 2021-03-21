@@ -14,9 +14,9 @@ public class Main {
      * simulation. If no arguments are passed then user must enter arguments
      * from popping dialog.
      *
-     * @param args <ul><li>args[0] is an {@code int} that holds the number of
-     * founders for the simulation</li><li>args[1] is a {@code double} that
-     * holds the maximum time of the simulation</li></ul>
+     * @param args <ul><li>{@code args[0]} is an {@code int} that holds the
+     * number of founders for the simulation</li><li>{@code args[1]} is a
+     * {@code double} that holds the maximum time of the simulation</li></ul>
      */
     
     public static void main(String[] args) {
